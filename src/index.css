@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-primary: #2dd4bf;
+    --color-primary-container: #134e4a;
+    --color-on-primary: #020617;
+    --color-on-primary-container: #ccfbf1;
+    --color-secondary: #94a3b8;
+    --color-secondary-container: #1e293b;
+    --color-on-secondary-container: #f1f5f9;
+    --color-surface: #020617;
+    --color-surface-container-lowest: #030712;
+    --color-surface-container-low: #0b0f19;
+    --color-surface-container: #0f172a;
+    --color-surface-container-high: #1e293b;
+    --color-surface-bright: #334155;
+    --color-outline: #475569;
+    --color-outline-variant: #1e293b;
+    --color-on-surface: #f8fafc;
+    --color-on-surface-variant: #94a3b8;
+    --color-error: #f43f5e;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #020617;
+    color: #f8fafc;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Custom utility classes matching Geometric Balance design system */
+.font-headline {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.025em;
+}
+
+.font-body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Custom scrollbars for geometric slate aesthetics */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #030712;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+

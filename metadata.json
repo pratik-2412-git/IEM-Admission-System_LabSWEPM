@@ -1,0 +1,6 @@
+{
+  "name": "IEM Admission Portal",
+  "description": "Comprehensive admission portal for Institute of Engineering & Management featuring candidate registration, application forms, document verification, fee payment, merit list, and live database inspection.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
