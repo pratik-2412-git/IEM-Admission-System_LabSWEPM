@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Save, ArrowRight, CheckCircle2, School, User as UserIcon, BookOpen } from 'lucide-react';
+import { Save, ArrowRight, CheckCircle2, Bookmark } from 'lucide-react';
 import { Application } from '../types';
 
 interface ApplicationFormViewProps {
@@ -25,7 +25,7 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
   const [percentageCgpa, setPercentageCgpa] = useState(application?.academic.percentageCgpa || '94.6');
 
   const [primaryCourse, setPrimaryCourse] = useState(
-    application?.course.primaryCourse || 'B.Tech in Computer Science & Engineering (CSE)'
+    application?.course.primaryCourse || 'B.Tech Computer Science'
   );
 
   const [saving, setSaving] = useState(false);
@@ -64,7 +64,7 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
         course: {
           ...(application?.course || {}),
           primaryCourse,
-          secondaryCourse: application?.course.secondaryCourse || 'B.Tech in Artificial Intelligence & Data Science',
+          secondaryCourse: application?.course.secondaryCourse || 'B.Tech Electronics',
           campusPreference: application?.course.campusPreference || 'IEM Kolkata - Main Campus',
         },
       });
@@ -82,261 +82,275 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
   };
 
   return (
-    <div className="space-y-6 max-w-[1200px] mx-auto pb-12 text-[#F8FAFC]">
-      {/* Header */}
-      <div>
-        <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-bold">Registration Pipeline</span>
-        <h2 className="font-headline text-2xl md:text-3xl font-bold text-[#F8FAFC] tracking-tight mt-0.5">
-          Application Form
-        </h2>
-      </div>
+    <div className="max-w-4xl mx-auto pb-12 transition-colors duration-300">
+      {/* Header & Stepper */}
+      <div className="mb-8 animate-fade-up">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="font-headline text-2xl md:text-3xl font-semibold text-[#33253c] tracking-tight">
+              Application Form
+            </h1>
+            <p className="text-xs text-[#4a454c] mt-0.5">Academic Session 2026-2027 Registration</p>
+          </div>
 
-      {/* Top 4-Step Stepper from Mockup */}
-      <div className="py-2">
-        <div className="flex items-center justify-between max-w-2xl">
-          {/* Step 1: Profile (Active) */}
-          <button 
-            type="button"
-            onClick={() => onStepClick?.(1)}
-            className="flex flex-col items-center gap-1.5 group cursor-pointer"
-          >
-            <div className="w-8 h-8 rounded bg-[#2DD4BF] text-[#020617] font-bold font-mono text-xs flex items-center justify-center shadow-sm shadow-teal-500/20">
-              01
-            </div>
-            <span className="text-xs font-mono font-bold text-[#2DD4BF]">Profile</span>
-          </button>
-
-          {/* Bar 1 */}
-          <div className="flex-1 h-[2px] bg-slate-800 mx-3 -mt-4" />
-
-          {/* Step 2: Documents */}
-          <button 
-            type="button"
-            onClick={() => onStepClick?.(2)}
-            className="flex flex-col items-center gap-1.5 group cursor-pointer"
-          >
-            <div className="w-8 h-8 rounded bg-[#030712] border border-[#1E293B] text-slate-500 font-mono text-xs flex items-center justify-center group-hover:border-teal-400 group-hover:text-slate-300 transition-colors">
-              02
-            </div>
-            <span className="text-xs font-mono text-slate-400 group-hover:text-slate-200 transition-colors">Documents</span>
-          </button>
-
-          {/* Bar 2 */}
-          <div className="flex-1 h-[2px] bg-slate-800 mx-3 -mt-4" />
-
-          {/* Step 3: Payment */}
-          <button 
-            type="button"
-            onClick={() => onStepClick?.(3)}
-            className="flex flex-col items-center gap-1.5 group cursor-pointer"
-          >
-            <div className="w-8 h-8 rounded bg-[#030712] border border-[#1E293B] text-slate-500 font-mono text-xs flex items-center justify-center group-hover:border-teal-400 group-hover:text-slate-300 transition-colors">
-              03
-            </div>
-            <span className="text-xs font-mono text-slate-400 group-hover:text-slate-200 transition-colors">Payment</span>
-          </button>
-
-          {/* Bar 3 */}
-          <div className="flex-1 h-[2px] bg-slate-800 mx-3 -mt-4" />
-
-          {/* Step 4: Submit */}
-          <button 
-            type="button"
-            onClick={() => onStepClick?.(4)}
-            className="flex flex-col items-center gap-1.5 group cursor-pointer"
-          >
-            <div className="w-8 h-8 rounded bg-[#030712] border border-[#1E293B] text-slate-500 font-mono text-xs flex items-center justify-center group-hover:border-teal-400 group-hover:text-slate-300 transition-colors">
-              04
-            </div>
-            <span className="text-xs font-mono text-slate-400 group-hover:text-slate-200 transition-colors">Submit</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Main Form Container Card */}
-      <form onSubmit={handleNext} className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-6 md:p-8 shadow-sm space-y-8">
-        {/* Section 1: Personal Details */}
-        <div>
-          <h3 className="font-headline text-base font-semibold text-[#F8FAFC] pb-2.5 border-b border-[#1E293B] mb-5 flex items-center gap-2">
-            <span className="text-teal-400 font-mono text-xs">[01]</span> Personal Details
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Full Legal Name <span className="text-rose-400">*</span>
-              </label>
-              <input
-                id="form-full-name"
-                type="text"
-                required
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Enter your legal name"
-                className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-[#1E293B] focus:border-teal-400 focus:ring-1 focus:ring-teal-400 bg-[#030712] text-slate-100 placeholder-slate-500 outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Date of Birth <span className="text-rose-400">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  id="form-dob"
-                  type="date"
-                  required
-                  value={dob}
-                  onChange={(e) => setDob(e.target.value)}
-                  placeholder="yyyy-mm-dd"
-                  className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-[#1E293B] focus:border-teal-400 focus:ring-1 focus:ring-teal-400 bg-[#030712] text-slate-100 outline-none"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Email Address <span className="text-rose-400">*</span>
-              </label>
-              <input
-                id="form-email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="applicant@example.com"
-                className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-[#1E293B] focus:border-teal-400 focus:ring-1 focus:ring-teal-400 bg-[#030712] text-slate-100 placeholder-slate-500 outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Phone Number <span className="text-rose-400">*</span>
-              </label>
-              <input
-                id="form-phone"
-                type="tel"
-                required
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+1 (555) 000-0000"
-                className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-[#1E293B] focus:border-teal-400 focus:ring-1 focus:ring-teal-400 bg-[#030712] text-slate-100 placeholder-slate-500 outline-none"
-              />
-            </div>
+          {/* Smooth pulsing autosave indicator */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#f9f6ed] border border-[#ded9cf] rounded-full text-xs text-[#4a454c] font-medium shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+            <span>Auto-saved draft</span>
           </div>
         </div>
 
-        {/* Section 2: Academic Background */}
-        <div>
-          <h3 className="font-headline text-base font-semibold text-[#F8FAFC] pb-2.5 border-b border-[#1E293B] mb-5 flex items-center gap-2">
-            <span className="text-teal-400 font-mono text-xs">[02]</span> Academic Background
-          </h3>
+        {/* Progress Stepper with Connected Lines */}
+        <div className="flex items-center justify-between relative px-2 py-1">
+          {/* Track line background */}
+          <div className="absolute left-6 right-6 top-5 h-0.5 bg-[#eae6da] z-0"></div>
+          {/* Smooth animated active progress line */}
+          <div className="animated-progress-bar absolute left-6 top-5 h-0.5 bg-[#33253c] z-0 w-[12%]"></div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-            <div className="md:col-span-8">
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Previous Institution <span className="text-rose-400">*</span>
+          {/* Step 1 (Active) */}
+          <div 
+            onClick={() => onStepClick?.(1)}
+            className="relative z-10 flex flex-col items-center gap-2 group cursor-pointer animate-fade-up stagger-1"
+          >
+            <div className="w-9 h-9 rounded-full bg-[#33253c] text-white flex items-center justify-center font-bold text-xs shadow-md ring-4 ring-[#fdfbf5] transition-transform group-hover:scale-105">
+              1
+            </div>
+            <span className="text-xs font-semibold text-[#33253c]">Profile</span>
+          </div>
+
+          {/* Step 2 */}
+          <div 
+            onClick={() => onStepClick?.(2)}
+            className="relative z-10 flex flex-col items-center gap-2 group cursor-pointer animate-fade-up stagger-2"
+          >
+            <div className="w-9 h-9 rounded-full bg-[#fdfbf5] border-2 border-[#ded9cf] text-[#7b776d] flex items-center justify-center font-semibold text-xs ring-4 ring-[#fdfbf5] transition-all duration-200 group-hover:border-[#33253c] group-hover:text-[#33253c] group-hover:scale-105">
+              2
+            </div>
+            <span className="text-xs text-[#7b776d] group-hover:text-[#33253c] transition-colors font-medium">Documents</span>
+          </div>
+
+          {/* Step 3 */}
+          <div 
+            onClick={() => onStepClick?.(3)}
+            className="relative z-10 flex flex-col items-center gap-2 group cursor-pointer animate-fade-up stagger-3"
+          >
+            <div className="w-9 h-9 rounded-full bg-[#fdfbf5] border-2 border-[#ded9cf] text-[#7b776d] flex items-center justify-center font-semibold text-xs ring-4 ring-[#fdfbf5] transition-all duration-200 group-hover:border-[#33253c] group-hover:text-[#33253c] group-hover:scale-105">
+              3
+            </div>
+            <span className="text-xs text-[#7b776d] group-hover:text-[#33253c] transition-colors font-medium">Payment</span>
+          </div>
+
+          {/* Step 4 */}
+          <div 
+            onClick={() => onStepClick?.(4)}
+            className="relative z-10 flex flex-col items-center gap-2 group cursor-pointer animate-fade-up stagger-4"
+          >
+            <div className="w-9 h-9 rounded-full bg-[#fdfbf5] border-2 border-[#ded9cf] text-[#7b776d] flex items-center justify-center font-semibold text-xs ring-4 ring-[#fdfbf5] transition-all duration-200 group-hover:border-[#33253c] group-hover:text-[#33253c] group-hover:scale-105">
+              4
+            </div>
+            <span className="text-xs text-[#7b776d] group-hover:text-[#33253c] transition-colors font-medium">Submit</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Form Container with refined warm styling */}
+      <form 
+        onSubmit={handleNext} 
+        className="bg-white/95 backdrop-blur-xs rounded-xl border border-[#ded9cf] p-6 md:p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)] space-y-8 animate-fade-up"
+      >
+        {/* Section: Personal Details */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between border-b border-[#ded9cf] pb-2.5">
+            <h3 className="font-headline text-base font-semibold text-[#33253c]">Personal Details</h3>
+            <span className="text-xs text-[#4a454c] font-medium bg-[#f0eee6] px-2 py-0.5 rounded">Step 1 of 4</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-1">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-[#1e1c17]" htmlFor="form-full-name">
+                Full Name <span className="text-[#ba1a1a]">*</span>
               </label>
-              <input
-                id="form-institution"
-                type="text"
+              <input 
+                id="form-full-name"
                 required
-                value={previousInstitution}
-                onChange={(e) => setPreviousInstitution(e.target.value)}
-                placeholder="Name of High School or College"
-                className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-[#1E293B] focus:border-teal-400 focus:ring-1 focus:ring-teal-400 bg-[#030712] text-slate-100 placeholder-slate-500 outline-none"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Enter your legal name" 
+                type="text"
+                className="w-full border border-[#ded9cf] rounded-lg px-3.5 py-2.5 text-sm bg-[#fcfaf2] focus:bg-white focus:outline-none focus:border-[#33253c] focus:ring-2 focus:ring-[#33253c]/20 transition-all duration-200 hover:border-[#33253c]/60 text-[#1e1c17] outline-none"
               />
             </div>
 
-            <div className="md:col-span-4">
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Year of Passing <span className="text-rose-400">*</span>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-[#1e1c17]" htmlFor="form-dob">
+                Date of Birth <span className="text-[#ba1a1a]">*</span>
               </label>
-              <select
+              <input 
+                id="form-dob"
+                required
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+                type="date"
+                className="w-full border border-[#ded9cf] rounded-lg px-3.5 py-2.5 text-sm bg-[#fcfaf2] focus:bg-white focus:outline-none focus:border-[#33253c] focus:ring-2 focus:ring-[#33253c]/20 transition-all duration-200 hover:border-[#33253c]/60 text-[#1e1c17] outline-none"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-[#1e1c17]" htmlFor="form-email">
+                Email Address <span className="text-[#ba1a1a]">*</span>
+              </label>
+              <input 
+                id="form-email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="applicant@example.com" 
+                type="email"
+                className="w-full border border-[#ded9cf] rounded-lg px-3.5 py-2.5 text-sm bg-[#fcfaf2] focus:bg-white focus:outline-none focus:border-[#33253c] focus:ring-2 focus:ring-[#33253c]/20 transition-all duration-200 hover:border-[#33253c]/60 text-[#1e1c17] outline-none"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-[#1e1c17]" htmlFor="form-phone">
+                Phone Number <span className="text-[#ba1a1a]">*</span>
+              </label>
+              <input 
+                id="form-phone"
+                required
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+1 (555) 000-0000" 
+                type="tel"
+                className="w-full border border-[#ded9cf] rounded-lg px-3.5 py-2.5 text-sm bg-[#fcfaf2] focus:bg-white focus:outline-none focus:border-[#33253c] focus:ring-2 focus:ring-[#33253c]/20 transition-all duration-200 hover:border-[#33253c]/60 text-[#1e1c17] outline-none"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Section: Academic Background */}
+        <section className="space-y-4 pt-2">
+          <div className="flex items-center justify-between border-b border-[#ded9cf] pb-2.5">
+            <h3 className="font-headline text-base font-semibold text-[#33253c]">Academic Background</h3>
+            <span className="text-xs text-[#4a454c] font-medium">Prior Education</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 pt-1">
+            <div className="col-span-1 md:col-span-8 flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-[#1e1c17]" htmlFor="form-institution">
+                Previous Institution <span className="text-[#ba1a1a]">*</span>
+              </label>
+              <input 
+                id="form-institution"
+                required
+                value={previousInstitution}
+                onChange={(e) => setPreviousInstitution(e.target.value)}
+                placeholder="Name of High School or College" 
+                type="text"
+                className="w-full border border-[#ded9cf] rounded-lg px-3.5 py-2.5 text-sm bg-[#fcfaf2] focus:bg-white focus:outline-none focus:border-[#33253c] focus:ring-2 focus:ring-[#33253c]/20 transition-all duration-200 hover:border-[#33253c]/60 text-[#1e1c17] outline-none"
+              />
+            </div>
+
+            <div className="col-span-1 md:col-span-4 flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-[#1e1c17]" htmlFor="form-year-passing">
+                Year of Passing <span className="text-[#ba1a1a]">*</span>
+              </label>
+              <select 
                 id="form-year-passing"
                 value={yearOfPassing}
                 onChange={(e) => setYearOfPassing(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-[#1E293B] focus:border-teal-400 bg-[#030712] text-slate-100 outline-none"
+                className="w-full border border-[#ded9cf] rounded-lg px-3.5 py-2.5 text-sm bg-[#fcfaf2] focus:bg-white focus:outline-none focus:border-[#33253c] focus:ring-2 focus:ring-[#33253c]/20 transition-all duration-200 hover:border-[#33253c]/60 cursor-pointer text-[#1e1c17] outline-none"
               >
                 <option value="2026">2026</option>
                 <option value="2025">2025</option>
                 <option value="2024">2024</option>
                 <option value="2023">2023</option>
-                <option value="2022">2022</option>
+                <option value="2022">Earlier</option>
               </select>
             </div>
 
-            <div className="md:col-span-6">
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Percentage / CGPA <span className="text-rose-400">*</span>
+            <div className="col-span-1 md:col-span-6 flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-[#1e1c17]" htmlFor="form-cgpa">
+                Percentage / CGPA <span className="text-[#ba1a1a]">*</span>
               </label>
-              <input
+              <input 
                 id="form-cgpa"
-                type="text"
                 required
                 value={percentageCgpa}
                 onChange={(e) => setPercentageCgpa(e.target.value)}
-                placeholder="e.g. 85% or 3.8"
-                className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-[#1E293B] focus:border-teal-400 focus:ring-1 focus:ring-teal-400 bg-[#030712] text-slate-100 placeholder-slate-500 outline-none font-mono"
+                placeholder="e.g. 85% or 3.8" 
+                type="text"
+                className="w-full border border-[#ded9cf] rounded-lg px-3.5 py-2.5 text-sm bg-[#fcfaf2] focus:bg-white focus:outline-none focus:border-[#33253c] focus:ring-2 focus:ring-[#33253c]/20 transition-all duration-200 hover:border-[#33253c]/60 font-mono text-[#1e1c17] outline-none"
               />
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Section 3: Course Selection */}
-        <div>
-          <h3 className="font-headline text-base font-semibold text-[#F8FAFC] pb-2.5 border-b border-[#1E293B] mb-5 flex items-center gap-2">
-            <span className="text-teal-400 font-mono text-xs">[03]</span> Program Preference
-          </h3>
-
-          <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Primary Course Preference <span className="text-rose-400">*</span>
-            </label>
-            <select
-              id="form-course-preference"
-              value={primaryCourse}
-              onChange={(e) => setPrimaryCourse(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-[#1E293B] focus:border-teal-400 bg-[#030712] text-slate-100 outline-none"
-            >
-              <option value="B.Tech in Computer Science & Engineering (CSE)">B.Tech in Computer Science & Engineering (CSE)</option>
-              <option value="B.Tech in Artificial Intelligence & Data Science">B.Tech in Artificial Intelligence & Data Science</option>
-              <option value="B.Tech in Electronics & Communication (ECE)">B.Tech in Electronics & Communication (ECE)</option>
-              <option value="B.Tech in Information Technology">B.Tech in Information Technology</option>
-              <option value="B.Tech in Mechanical Engineering">B.Tech in Mechanical Engineering</option>
-              <option value="Master of Business Administration (MBA)">Master of Business Administration (MBA)</option>
-              <option value="Master of Computer Applications (MCA)">Master of Computer Applications (MCA)</option>
-            </select>
+        {/* Section: Course Selection */}
+        <section className="space-y-4 pt-2">
+          <div className="border-b border-[#ded9cf] pb-2.5">
+            <h3 className="font-headline text-base font-semibold text-[#33253c]">Course Selection</h3>
           </div>
+          <div className="flex flex-col gap-4 pt-1">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-[#1e1c17]" htmlFor="form-course-preference">
+                Primary Course Preference <span className="text-[#ba1a1a]">*</span>
+              </label>
+              <select 
+                id="form-course-preference"
+                value={primaryCourse}
+                onChange={(e) => setPrimaryCourse(e.target.value)}
+                className="w-full border border-[#ded9cf] rounded-lg px-3.5 py-2.5 text-sm bg-[#fcfaf2] focus:bg-white focus:outline-none focus:border-[#33253c] focus:ring-2 focus:ring-[#33253c]/20 transition-all duration-200 hover:border-[#33253c]/60 cursor-pointer text-[#1e1c17] outline-none"
+              >
+                <option value="B.Tech Computer Science">B.Tech Computer Science</option>
+                <option value="B.Tech Electronics">B.Tech Electronics</option>
+                <option value="BBA General">BBA General</option>
+                <option value="MBA Finance">MBA Finance</option>
+                <option value="B.Tech in Artificial Intelligence & Data Science">B.Tech in Artificial Intelligence & Data Science</option>
+                <option value="Master of Computer Applications (MCA)">Master of Computer Applications (MCA)</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        {/* Skeleton Loading preview pulse indicator for verification */}
+        <div className="p-4 bg-[#f9f6ed]/70 rounded-lg border border-dashed border-[#ded9cf] flex items-center gap-3">
+          <span className="material-symbols-outlined text-[#63603c] text-xl animate-spin" style={{ animationDuration: '3s' }}>
+            sync
+          </span>
+          <div className="flex-1 space-y-1.5">
+            <div className="h-2.5 bg-[#eae6da] rounded-full w-48 animate-pulse"></div>
+            <div className="h-2 bg-[#eae6da]/70 rounded-full w-32 animate-pulse"></div>
+          </div>
+          <span className="text-xs text-[#4a454c] font-medium">Auto-verifying input standards</span>
         </div>
 
-        {/* Bottom Buttons */}
-        <div className="pt-6 border-t border-[#1E293B] flex flex-col sm:flex-row items-center justify-end gap-3">
-          {savedSuccess && (
-            <span className="text-xs text-teal-400 font-mono flex items-center gap-1.5 mr-auto">
-              <CheckCircle2 className="w-4 h-4" />
-              Progress committed to database ledger!
-            </span>
-          )}
+        {/* Feedback message */}
+        {savedSuccess && (
+          <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-xs flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Progress successfully saved to database ledger!</span>
+          </div>
+        )}
 
-          <button
+        {/* Actions with micro-interactions */}
+        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-[#ded9cf]">
+          <button 
             id="form-save-progress-btn"
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-lg border border-[#1E293B] bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs font-mono font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer"
+            className="px-6 py-2.5 rounded-lg border border-[#33253c] text-[#33253c] font-semibold text-xs hover:bg-[#f1ebdb] active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Save className="w-3.5 h-3.5 text-teal-400" />
-            <span>{saving ? 'Saving...' : 'SAVE_PROGRESS'}</span>
+            <Bookmark className="w-4 h-4 text-[#33253c]" />
+            <span>{saving ? 'Saving...' : 'Save Progress'}</span>
           </button>
-
-          <button
+          <button 
             id="form-next-step-btn"
             type="submit"
-            className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-[#2DD4BF] hover:bg-teal-400 text-[#020617] text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-sm shadow-teal-500/10 cursor-pointer"
+            className="px-7 py-2.5 rounded-lg bg-[#33253c] text-white font-semibold text-xs hover:bg-[#4a3b53] active:scale-[0.98] transition-all duration-150 shadow-sm flex items-center justify-center gap-2 cursor-pointer group"
           >
-            <span>Next: Upload Documents</span>
-            <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>Next Step</span>
+            <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
           </button>
         </div>
       </form>

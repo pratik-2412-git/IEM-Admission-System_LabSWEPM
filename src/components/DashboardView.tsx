@@ -47,31 +47,30 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const isPaid = payments.some(p => p.status === 'success');
   const isSeatAllotted = application?.status === 'seat_allotted' || meritItem?.status === 'Allotted';
 
-  // Calculate current stage
   const getStageStatus = () => {
-    if (isSeatAllotted) return { label: 'SEAT_ALLOTTED', color: 'bg-teal-500/10 text-teal-400 border-teal-500/30' };
-    if (application?.status === 'merit_qualified') return { label: 'MERIT_QUALIFIED', color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30' };
-    if (isDocsVerified) return { label: 'DOCS_VERIFIED', color: 'bg-teal-500/10 text-teal-400 border-teal-500/30' };
-    if (application?.status === 'under_review') return { label: 'UNDER_REVIEW', color: 'bg-amber-500/10 text-amber-400 border-amber-500/30' };
-    return { label: 'IN_PROGRESS', color: 'bg-amber-500/10 text-amber-400 border-amber-500/30' };
+    if (isSeatAllotted) return { label: 'SEAT ALLOTTED', color: 'bg-emerald-50 text-emerald-800 border-emerald-200' };
+    if (application?.status === 'merit_qualified') return { label: 'MERIT QUALIFIED', color: 'bg-[#e7dcea] text-[#33253c] border-[#e7dcea]' };
+    if (isDocsVerified) return { label: 'DOCS VERIFIED', color: 'bg-emerald-50 text-emerald-800 border-emerald-200' };
+    if (application?.status === 'under_review') return { label: 'UNDER REVIEW', color: 'bg-amber-50 text-amber-800 border-amber-200' };
+    return { label: 'IN PROGRESS', color: 'bg-amber-50 text-amber-800 border-amber-200' };
   };
 
   const statusInfo = getStageStatus();
 
   return (
-    <div className="space-y-6 max-w-[1200px] mx-auto text-[#F8FAFC]">
+    <div className="space-y-6 max-w-[1200px] mx-auto text-[#1e1c17] transition-colors duration-300">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 animate-fade-up">
         <div>
-          <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-bold">System Status</span>
-          <h2 className="font-headline text-2xl font-bold text-[#F8FAFC] tracking-tight mt-0.5">
+          <h1 className="font-headline text-2xl md:text-3xl font-semibold text-[#33253c] tracking-tight">
             Application Overview
-          </h2>
+          </h1>
+          <p className="text-xs text-[#4a454c] mt-0.5">Monitor your admission journey, milestones, and status</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1 bg-slate-900 border border-[#1E293B] rounded">
-            <span className="text-[10px] font-mono text-slate-400">ID:</span>
-            <span className="text-xs font-mono text-teal-400">{application?.id || 'IEM-2024-001'}</span>
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#f9f6ed] border border-[#ded9cf] rounded-lg">
+            <span className="text-xs text-[#4a454c] font-medium">Application ID:</span>
+            <span className="text-xs font-semibold text-[#33253c]">{application?.id || 'IEM-2026-001'}</span>
           </div>
         </div>
       </div>
@@ -79,20 +78,24 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* Admission Progress Stepper */}
       <section 
         id="admission-progress-stepper"
-        className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-6 shadow-sm"
+        className="bg-white/95 backdrop-blur-xs border border-[#ded9cf] rounded-xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.02)] animate-fade-up stagger-1"
       >
-        <div className="flex items-center justify-between mb-6 pb-3 border-b border-[#1E293B]">
-          <span className="text-xs font-bold tracking-wider text-slate-300 uppercase font-mono">Admission Lifecycle</span>
-          <span className="text-[11px] font-mono text-teal-400">Phase 3 of 5</span>
+        <div className="flex items-center justify-between mb-6 pb-3 border-b border-[#ded9cf]">
+          <span className="text-xs font-semibold text-[#33253c] uppercase tracking-wider">
+            Admission Lifecycle
+          </span>
+          <span className="text-xs text-[#4a454c] font-medium bg-[#f0eee6] px-2.5 py-0.5 rounded-full">
+            {isSeatAllotted ? 'Phase 5 of 5: Complete' : isDocsVerified ? 'Phase 3 of 5: Verified' : 'Phase 2 of 5: In Review'}
+          </span>
         </div>
 
         <div className="relative flex justify-between items-center w-full max-w-4xl mx-auto px-4">
           {/* Background Track Line */}
-          <div className="absolute top-1/2 left-8 right-8 h-[2px] bg-slate-800 -translate-y-1/2 z-0" />
+          <div className="absolute top-1/2 left-8 right-8 h-0.5 bg-[#eae6da] -translate-y-1/2 z-0" />
           
           {/* Active Fill Line */}
           <div 
-            className="absolute top-1/2 left-8 h-[2px] bg-[#2DD4BF] -translate-y-1/2 z-0 transition-all duration-500 shadow-sm shadow-teal-500/50" 
+            className="animated-progress-bar absolute top-1/2 left-8 h-0.5 bg-[#33253c] -translate-y-1/2 z-0 shadow-xs" 
             style={{ 
               width: isSeatAllotted ? '92%' : isDocsVerified ? '50%' : '25%' 
             }}
@@ -100,35 +103,35 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           {/* Step 1: Registration */}
           <div className="relative z-10 flex flex-col items-center gap-2">
-            <div className="w-7 h-7 rounded-sm bg-[#2DD4BF] text-[#020617] flex items-center justify-center font-bold shadow-sm shadow-teal-500/20">
-              <Check className="w-3.5 h-3.5 stroke-[3]" />
+            <div className="w-8 h-8 rounded-full bg-[#33253c] text-white flex items-center justify-center font-bold text-xs shadow-md ring-4 ring-[#fdfbf5]">
+              <Check className="w-4 h-4 stroke-[2.5]" />
             </div>
-            <span className="text-[11px] font-mono font-medium text-slate-200 whitespace-nowrap">01 Registration</span>
+            <span className="text-xs font-semibold text-[#33253c] whitespace-nowrap">01 Registration</span>
           </div>
 
           {/* Step 2: Form Submitted */}
           <div className="relative z-10 flex flex-col items-center gap-2">
-            <div className="w-7 h-7 rounded-sm bg-[#2DD4BF] text-[#020617] flex items-center justify-center font-bold shadow-sm shadow-teal-500/20">
-              <Check className="w-3.5 h-3.5 stroke-[3]" />
+            <div className="w-8 h-8 rounded-full bg-[#33253c] text-white flex items-center justify-center font-bold text-xs shadow-md ring-4 ring-[#fdfbf5]">
+              <Check className="w-4 h-4 stroke-[2.5]" />
             </div>
-            <span className="text-[11px] font-mono font-medium text-slate-200 whitespace-nowrap">02 Form Entry</span>
+            <span className="text-xs font-semibold text-[#33253c] whitespace-nowrap">02 Form Entry</span>
           </div>
 
           {/* Step 3: Docs Verified */}
           <div className="relative z-10 flex flex-col items-center gap-2">
-            <div className={`w-7 h-7 rounded-sm flex items-center justify-center border transition-all ${
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ring-4 ring-[#fdfbf5] transition-all ${
               isDocsVerified 
-                ? 'bg-[#2DD4BF] text-[#020617] border-[#2DD4BF] font-bold' 
-                : 'bg-slate-900 text-teal-400 border-teal-500/50 animate-pulse'
+                ? 'bg-[#33253c] text-white border-[#33253c] font-bold shadow-md' 
+                : 'bg-[#fdfbf5] text-[#33253c] border-[#33253c] animate-pulse'
             }`}>
               {isDocsVerified ? (
-                <Check className="w-3.5 h-3.5 stroke-[3]" />
+                <Check className="w-4 h-4 stroke-[2.5]" />
               ) : (
-                <Hourglass className="w-3.5 h-3.5 text-teal-400" />
+                <Hourglass className="w-3.5 h-3.5 text-[#33253c]" />
               )}
             </div>
-            <span className={`text-[11px] font-mono whitespace-nowrap ${
-              isDocsVerified ? 'font-medium text-slate-200' : 'font-bold text-teal-400'
+            <span className={`text-xs whitespace-nowrap ${
+              isDocsVerified ? 'font-semibold text-[#33253c]' : 'font-medium text-[#4a454c]'
             }`}>
               03 Verification
             </span>
@@ -136,79 +139,79 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           {/* Step 4: Merit List */}
           <div className={`relative z-10 flex flex-col items-center gap-2 ${
-            meritItem || isDocsVerified ? 'opacity-100' : 'opacity-40'
+            meritItem || isDocsVerified ? 'opacity-100' : 'opacity-50'
           }`}>
-            <div className={`w-7 h-7 rounded-sm flex items-center justify-center border ${
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ring-4 ring-[#fdfbf5] ${
               meritItem 
-                ? 'bg-[#2DD4BF] text-[#020617] border-[#2DD4BF] font-bold' 
-                : 'bg-slate-900 text-slate-500 border-slate-700'
+                ? 'bg-[#33253c] text-white border-[#33253c] font-bold shadow-md' 
+                : 'bg-[#fdfbf5] text-[#7b776d] border-[#ded9cf]'
             }`}>
-              {meritItem ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : <span className="text-[11px] font-mono">04</span>}
+              {meritItem ? <Check className="w-4 h-4 stroke-[2.5]" /> : <span className="text-xs font-semibold">04</span>}
             </div>
-            <span className="text-[11px] font-mono text-slate-400 whitespace-nowrap">04 Merit Rank</span>
+            <span className="text-xs text-[#4a454c] whitespace-nowrap">04 Merit Rank</span>
           </div>
 
           {/* Step 5: Seat Allotment */}
           <div className={`relative z-10 flex flex-col items-center gap-2 ${
-            isSeatAllotted ? 'opacity-100' : 'opacity-40'
+            isSeatAllotted ? 'opacity-100' : 'opacity-50'
           }`}>
-            <div className={`w-7 h-7 rounded-sm flex items-center justify-center border ${
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ring-4 ring-[#fdfbf5] ${
               isSeatAllotted 
-                ? 'bg-[#2DD4BF] text-[#020617] border-[#2DD4BF] font-bold' 
-                : 'bg-slate-900 text-slate-500 border-slate-700'
+                ? 'bg-[#33253c] text-white border-[#33253c] font-bold shadow-md' 
+                : 'bg-[#fdfbf5] text-[#7b776d] border-[#ded9cf]'
             }`}>
-              {isSeatAllotted ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : <span className="text-[11px] font-mono">05</span>}
+              {isSeatAllotted ? <Check className="w-4 h-4 stroke-[2.5]" /> : <span className="text-xs font-semibold">05</span>}
             </div>
-            <span className="text-[11px] font-mono text-slate-400 whitespace-nowrap">05 Allotment</span>
+            <span className="text-xs text-[#4a454c] whitespace-nowrap">05 Allotment</span>
           </div>
         </div>
       </section>
 
       {/* Bento Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-up stagger-2">
         {/* Card 1: Current Status Card (2 Columns wide) */}
         <div 
           id="current-status-card"
-          className="lg:col-span-2 bg-[#0F172A] border border-[#1E293B] rounded-xl flex flex-col justify-between overflow-hidden shadow-sm"
+          className="lg:col-span-2 bg-white/95 backdrop-blur-xs border border-[#ded9cf] rounded-xl flex flex-col justify-between overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.02)]"
         >
-          <div className="px-6 py-4 border-b border-[#1E293B] flex justify-between items-center bg-slate-900/40">
-            <span className="text-xs font-bold font-mono tracking-wider uppercase text-slate-300">
+          <div className="px-6 py-4 border-b border-[#ded9cf] flex justify-between items-center bg-[#f9f6ed]/60">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#33253c]">
               Admission Pipeline State
             </span>
-            <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded border ${statusInfo.color}`}>
+            <span className={`px-2.5 py-1 text-xs font-semibold rounded-md border ${statusInfo.color}`}>
               {statusInfo.label}
             </span>
           </div>
 
           <div className="p-6">
-            <p className="text-sm text-slate-300 leading-relaxed mb-6">
+            <p className="text-sm text-[#1e1c17] leading-relaxed mb-6">
               {isSeatAllotted ? (
                 <>
-                  🎉 <strong className="text-white">Seat Confirmed:</strong> You have been officially allotted a seat in <strong className="text-teal-400 font-mono">{application?.course.primaryCourse || 'B.Tech CSE'}</strong> at the IEM Main Campus. Your Provisional Allotment Letter is available below.
+                  🎉 <strong className="text-[#33253c]">Seat Confirmed:</strong> You have been officially allotted a seat in <strong className="text-[#33253c] font-semibold">{application?.course.primaryCourse || 'B.Tech CSE'}</strong> at the IEM Main Campus. Your Provisional Allotment Letter is available below.
                 </>
               ) : isDocsVerified ? (
                 <>
-                  Your submitted credentials and uploaded marksheet documents have been <strong className="text-teal-400">verified</strong> by the central admissions scrutinizer. Institutional merit rankings are now computed.
+                  Your submitted credentials and uploaded marksheet documents have been <strong className="text-emerald-700">verified</strong> by the central admissions scrutinizer. Institutional merit rankings are now computed.
                 </>
               ) : (
                 <>
-                  Your application forms and fee payment have been safely written to the admission database. Document scrutiny is underway with average processing latency of 1-2 cycles.
+                  Your application forms and fee payment have been safely registered. Document scrutiny is currently underway with an average processing time of 1-2 business cycles.
                 </>
               )}
             </p>
 
             {/* Next Action Required Callout Box */}
-            <div className="bg-slate-900/70 border border-[#1E293B] p-4 rounded-lg flex items-start gap-3">
-              <div className="p-1.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/20 shrink-0 mt-0.5">
+            <div className="bg-[#f9f6ed] border border-[#ded9cf] p-4 rounded-xl flex items-start gap-3">
+              <div className="p-1.5 rounded-lg bg-[#e7dcea] text-[#33253c] shrink-0 mt-0.5">
                 <Info className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-bold font-mono text-slate-200 uppercase tracking-wide">Next Action Directive</p>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                <p className="text-xs font-semibold text-[#33253c] uppercase tracking-wide">Next Action Directive</p>
+                <p className="text-xs text-[#4a454c] mt-1 leading-relaxed">
                   {isSeatAllotted
-                    ? 'Accept your seat allotment and proceed with reporting to the IEM Admissions Office.'
+                    ? 'Download your Provisional Allotment Letter and complete in-person verification at the IEM Admissions Office.'
                     : isDocsVerified
-                    ? 'Review your position on the institutional Merit List and monitor Round 1 counseling allocations.'
+                    ? 'Review your rank on the institutional Merit List and monitor upcoming counseling seat rounds.'
                     : 'Please allow document verification to complete before institutional merit list compilation.'}
                 </p>
               </div>
@@ -219,10 +222,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* Card 2: Quick Links Card (1 Column wide) */}
         <div 
           id="quick-links-card"
-          className="bg-[#0F172A] border border-[#1E293B] rounded-xl flex flex-col overflow-hidden shadow-sm"
+          className="bg-white/95 backdrop-blur-xs border border-[#ded9cf] rounded-xl flex flex-col overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.02)]"
         >
-          <div className="px-6 py-4 border-b border-[#1E293B] bg-slate-900/40">
-            <span className="text-xs font-bold font-mono tracking-wider uppercase text-slate-300">
+          <div className="px-6 py-4 border-b border-[#ded9cf] bg-[#f9f6ed]/60">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#33253c]">
               Artifacts &amp; Exports
             </span>
           </div>
@@ -233,14 +236,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <button
                   id="quick-link-receipt-btn"
                   onClick={onOpenReceipt}
-                  className="w-full flex items-center gap-3 p-2.5 bg-slate-900/60 hover:bg-slate-800 border border-[#1E293B] rounded-lg transition-colors text-left group"
+                  className="w-full flex items-center gap-3 p-2.5 bg-[#f9f6ed] hover:bg-[#f0eee6] border border-[#ded9cf] rounded-lg transition-colors text-left group cursor-pointer"
                 >
-                  <div className="w-8 h-8 rounded bg-[#030712] border border-[#1E293B] flex items-center justify-center text-teal-400 group-hover:border-teal-500/40 transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-white border border-[#ded9cf] flex items-center justify-center text-[#33253c] group-hover:bg-[#33253c] group-hover:text-white transition-colors">
                     <Download className="w-3.5 h-3.5" />
                   </div>
                   <div>
-                    <span className="text-xs font-medium text-slate-200 block">Application Summary</span>
-                    <span className="text-[10px] font-mono text-slate-500">PDF submission record</span>
+                    <span className="text-xs font-semibold text-[#1e1c17] block">Application Summary</span>
+                    <span className="text-[11px] text-[#4a454c]">PDF submission record</span>
                   </div>
                 </button>
               </li>
@@ -249,14 +252,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <button
                   id="quick-link-invoice-btn"
                   onClick={onOpenInvoice}
-                  className="w-full flex items-center gap-3 p-2.5 bg-slate-900/60 hover:bg-slate-800 border border-[#1E293B] rounded-lg transition-colors text-left group"
+                  className="w-full flex items-center gap-3 p-2.5 bg-[#f9f6ed] hover:bg-[#f0eee6] border border-[#ded9cf] rounded-lg transition-colors text-left group cursor-pointer"
                 >
-                  <div className="w-8 h-8 rounded bg-[#030712] border border-[#1E293B] flex items-center justify-center text-teal-400 group-hover:border-teal-500/40 transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-white border border-[#ded9cf] flex items-center justify-center text-[#33253c] group-hover:bg-[#33253c] group-hover:text-white transition-colors">
                     <Receipt className="w-3.5 h-3.5" />
                   </div>
                   <div>
-                    <span className="text-xs font-medium text-slate-200">Fee Tax Invoice</span>
-                    <span className="text-[10px] font-mono text-slate-500 block">TXN987654321 ($50.00)</span>
+                    <span className="text-xs font-semibold text-[#1e1c17]">Fee Tax Invoice</span>
+                    <span className="text-[11px] text-[#4a454c] block">TXN987654321 ($50.00)</span>
                   </div>
                 </button>
               </li>
@@ -266,27 +269,27 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   <button
                     id="quick-link-allotment-btn"
                     onClick={onOpenAllotmentLetter}
-                    className="w-full flex items-center gap-3 p-2.5 bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/30 rounded-lg transition-colors text-left group cursor-pointer"
+                    className="w-full flex items-center gap-3 p-2.5 bg-emerald-50 hover:bg-emerald-100/70 border border-emerald-200 rounded-lg transition-colors text-left group cursor-pointer"
                   >
-                    <div className="w-8 h-8 rounded bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-300">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center">
                       <Unlock className="w-3.5 h-3.5" />
                     </div>
                     <div>
-                      <span className="text-xs font-bold text-teal-300 block">Allotment Letter</span>
-                      <span className="text-[10px] font-mono text-teal-400">Official offer decree</span>
+                      <span className="text-xs font-bold text-emerald-900 block">Allotment Letter</span>
+                      <span className="text-[11px] text-emerald-700">Official offer decree</span>
                     </div>
                   </button>
                 ) : (
                   <div 
-                    className="flex items-center gap-3 p-2.5 bg-slate-900/30 border border-[#1E293B] border-dashed rounded-lg opacity-50 cursor-not-allowed"
+                    className="flex items-center gap-3 p-2.5 bg-[#f9f6ed]/60 border border-[#ded9cf] border-dashed rounded-lg opacity-60 cursor-not-allowed"
                     title="Unlocked after Merit List seat allocation"
                   >
-                    <div className="w-8 h-8 rounded bg-slate-950 flex items-center justify-center text-slate-600">
+                    <div className="w-8 h-8 rounded-lg bg-[#eae8e0] flex items-center justify-center text-[#7b776d]">
                       <Lock className="w-3.5 h-3.5" />
                     </div>
                     <div>
-                      <span className="text-xs font-medium text-slate-400 block">Allotment Letter</span>
-                      <span className="text-[10px] font-mono text-slate-600">Locked pending seat allotment</span>
+                      <span className="text-xs font-medium text-[#4a454c] block">Allotment Letter</span>
+                      <span className="text-[11px] text-[#7b776d]">Locked pending seat allotment</span>
                     </div>
                   </div>
                 )}
@@ -298,51 +301,51 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* Card 3: Recent Notifications Feed (Full Width / 3 Columns) */}
         <div 
           id="recent-notifications-card"
-          className="lg:col-span-3 bg-[#0F172A] border border-[#1E293B] rounded-xl overflow-hidden shadow-sm"
+          className="lg:col-span-3 bg-white/95 backdrop-blur-xs border border-[#ded9cf] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.02)]"
         >
-          <div className="px-6 py-3.5 border-b border-[#1E293B] bg-slate-900/40 flex justify-between items-center">
+          <div className="px-6 py-3.5 border-b border-[#ded9cf] bg-[#f9f6ed]/60 flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <Bell className="w-4 h-4 text-teal-400" />
-              <span className="text-xs font-bold font-mono tracking-wider uppercase text-slate-300">
+              <Bell className="w-4 h-4 text-[#33253c]" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#33253c]">
                 Audit &amp; System Stream
               </span>
             </div>
             <button
               onClick={() => onNavigate('notifications')}
-              className="text-xs font-mono text-teal-400 hover:text-teal-300 hover:underline"
+              className="text-xs font-semibold text-[#33253c] hover:underline cursor-pointer"
             >
-              [VIEW_ALL]
+              View All
             </button>
           </div>
 
           <div className="p-6 space-y-3">
             {/* Notification Item 1: Payment */}
-            <div className="flex gap-4 p-3.5 border-l-2 border-teal-400 bg-slate-900/60 border-y border-r border-[#1E293B] rounded-r-lg">
-              <div className="text-teal-400 mt-0.5">
+            <div className="flex gap-4 p-3.5 border-l-3 border-[#33253c] bg-[#f9f6ed] border-y border-r border-[#ded9cf] rounded-r-lg">
+              <div className="text-emerald-700 mt-0.5">
                 <CheckCircle className="w-4 h-4" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-start">
-                  <p className="text-xs font-medium text-slate-200">Fee Payment Committed</p>
-                  <span className="text-[10px] font-mono text-slate-500">2h ago</span>
+                  <p className="text-xs font-semibold text-[#1e1c17]">Fee Payment Committed</p>
+                  <span className="text-[11px] text-[#4a454c]">2h ago</span>
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Application processing fee of $50.00 USD registered. TXN: <span className="font-mono text-teal-400">TXN987654321</span>.
+                <p className="text-xs text-[#4a454c] mt-0.5">
+                  Application processing fee of $50.00 USD registered. Reference: <span className="font-mono text-[#33253c] font-medium">TXN987654321</span>.
                 </p>
               </div>
             </div>
 
             {/* Notification Item 2: Docs Uploaded */}
-            <div className="flex gap-4 p-3.5 border-l-2 border-slate-700 bg-slate-900/40 border-y border-r border-[#1E293B] rounded-r-lg">
-              <div className="text-slate-500 mt-0.5">
+            <div className="flex gap-4 p-3.5 border-l-3 border-[#7b776d] bg-[#f9f6ed] border-y border-r border-[#ded9cf] rounded-r-lg">
+              <div className="text-[#63603c] mt-0.5">
                 <UploadCloud className="w-4 h-4" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-start">
-                  <p className="text-xs font-medium text-slate-200">Document Upload Ingested</p>
-                  <span className="text-[10px] font-mono text-slate-500">1d ago</span>
+                  <p className="text-xs font-semibold text-[#1e1c17]">Document Upload Ingested</p>
+                  <span className="text-[11px] text-[#4a454c]">1d ago</span>
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-[#4a454c] mt-0.5">
                   High School Transcripts and ID Proof staged for central registrar scrutiny.
                 </p>
               </div>

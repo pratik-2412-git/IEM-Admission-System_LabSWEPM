@@ -1,7 +1,6 @@
 import React from 'react';
 import { X, Printer, Award, CheckCircle2, ShieldCheck, Download } from 'lucide-react';
 import { Application, User, MeritItem } from '../types';
-import { IEMLogo } from './IEMLogo';
 
 interface AllotmentLetterModalProps {
   isOpen: boolean;
@@ -20,96 +19,108 @@ export const AllotmentLetterModal: React.FC<AllotmentLetterModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const iemLogo = "https://lh3.googleusercontent.com/aida-public/AB6AXuAhk-GeFs0zS-XHK3_pNbQxmaT2TKcUQhSfLrPNJpAwwmuiLTcaP9i6-FiW8cF4I740leSDyWe0Vuil2odmfLPIkJnd4R3NOFBjYfrww-y_dhdrtVF9yVus69KtP0rV7noIVq4REnrQw7V0-LdwzBCocnd5BFge_80nYtDh1RjG8IhgLPxPBWWW3t5s_FE9aD3zMj_TNG9KILh3YX3JQeD7JosJAma2W_mLRFxFLIdyIW394TlfjloqjdH77eTV9VT6aQ";
-
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 md:p-6 overflow-y-auto text-[#F8FAFC]">
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-3 md:p-6 overflow-y-auto text-[#1e1c17]">
       <div 
         id="provisional-allotment-modal"
-        className="bg-[#0F172A] max-w-2xl w-full rounded-xl border border-[#1E293B] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="bg-white max-w-2xl w-full rounded-2xl border border-[#ded9cf] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
       >
-        <div className="p-4 border-b border-[#1E293B] bg-[#030712] flex justify-between items-center print:hidden">
+        <div className="p-4 border-b border-[#ded9cf] bg-[#fdfbf5] flex justify-between items-center print:hidden">
           <div className="flex items-center gap-2">
-            <Award className="w-4 h-4 text-teal-400" />
-            <h3 className="font-headline font-bold text-sm text-[#F8FAFC]">Provisional Admission Allotment Letter</h3>
+            <Award className="w-4 h-4 text-[#33253c]" />
+            <h3 className="font-headline font-semibold text-sm text-[#33253c]">Provisional Admission Allotment Letter</h3>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => window.print()}
-              className="p-2 rounded-lg border border-[#1E293B] bg-[#0F172A] text-teal-400 hover:bg-slate-800 text-xs font-mono font-medium flex items-center gap-1.5 cursor-pointer"
+              className="p-2 rounded-lg border border-[#33253c] text-[#33253c] hover:bg-[#f1ebdb] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>PRINT_LETTER</span>
+              <span>Print Letter</span>
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 text-[#4a454c] hover:text-[#1e1c17] hover:bg-[#f0eee6] rounded-lg transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 text-[#F8FAFC]">
-          <div className="flex items-center justify-between border-b border-[#1E293B] pb-4">
+        <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 text-[#1e1c17]">
+          <div className="flex items-center justify-between border-b border-[#ded9cf] pb-4">
             <div className="flex items-center gap-3.5">
-              <IEMLogo size="lg" variant="icon" />
+              <div className="w-11 h-11 rounded-xl bg-[#33253c] text-white flex items-center justify-center font-bold text-sm shadow-xs">
+                IEM
+              </div>
               <div>
-                <h2 className="font-headline font-bold text-base text-[#F8FAFC]">Institute of Engineering &amp; Management</h2>
-                <p className="text-[11px] text-slate-400">Office of the Dean of Academic Admissions • Kolkata</p>
+                <h2 className="font-headline font-semibold text-base text-[#33253c]">Institute of Engineering &amp; Management</h2>
+                <p className="text-xs text-[#4a454c]">Office of the Dean of Academic Admissions • Kolkata</p>
               </div>
-            </div>
-            <div className="text-right font-mono">
-              <span className="text-[10px] text-slate-400 block">PROVISIONAL OFFER</span>
-              <span className="font-bold text-teal-400 text-sm">CONFIRMED</span>
-            </div>
-          </div>
-
-          <div className="bg-[#030712] border border-[#1E293B] p-4 rounded-lg text-xs space-y-3 font-mono">
-            <p className="text-slate-200"><strong>Dear {application?.personal.fullName || user?.name},</strong></p>
-            <p className="text-slate-300 leading-relaxed font-sans text-xs">
-              We are pleased to inform you that based on your performance in the academic qualifying exams and centralized institutional merit screening (Rank #{meritItem?.rank || 4}), you have been provisionally allotted a seat for the Academic Session 2026-2027:
-            </p>
-
-            <div className="bg-[#0F172A] p-3.5 rounded-lg border border-[#1E293B] space-y-2 text-xs">
-              <div className="flex justify-between">
-                <span className="text-slate-400">Program Allotted:</span>
-                <span className="font-bold text-teal-300">{application?.course.primaryCourse}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Seat Number / Code:</span>
-                <span className="font-bold text-slate-100">{meritItem?.allottedSeat || 'CSE-A-004'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Campus:</span>
-                <span className="font-medium text-slate-200">IEM Main Campus (Salt Lake Sector V)</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Physical Reporting Window:</span>
-                <span className="font-medium text-teal-400">July 15 - July 22, 2026</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-[#1E293B] pt-4 flex justify-between items-center text-xs font-mono">
-            <div>
-              <p className="font-semibold text-slate-200">Prof. (Dr.) S. Chatterjee</p>
-              <p className="text-[11px] text-slate-400">Dean of Admissions &amp; Academic Affairs</p>
             </div>
             <div className="text-right">
-              <div className="w-24 h-10 border border-[#1E293B] bg-[#030712] rounded flex items-center justify-center text-[10px] text-teal-400 font-mono">
-                [DEAN_SEAL]
+              <span className="text-[10px] text-[#4a454c] uppercase block">Ref No:</span>
+              <span className="font-bold text-[#33253c] font-mono text-xs">IEM/ADM/2026/ALLOT-849</span>
+            </div>
+          </div>
+
+          <div className="text-center py-3 bg-[#f9f6ed] rounded-xl border border-[#ded9cf]">
+            <h3 className="font-headline font-bold text-sm text-[#33253c] uppercase">
+              Provisional Seat Allotment Confirmation (Round 1)
+            </h3>
+            <p className="text-xs text-[#4a454c] mt-0.5">Academic Session 2026-2030</p>
+          </div>
+
+          <div className="text-xs leading-relaxed space-y-3">
+            <p>
+              Dear <strong className="text-[#33253c]">{application?.personal.fullName || user?.name || 'Candidate'}</strong> (Application ID: <span className="font-mono font-semibold">{application?.id || 'IEM-2026-001'}</span>),
+            </p>
+            <p className="text-[#4a454c]">
+              We are pleased to inform you that on the basis of your academic performance and counseling evaluation, you have been provisionally allotted a seat in the following undergraduate engineering program:
+            </p>
+
+            <div className="p-4 bg-[#f9f6ed] rounded-xl border border-[#ded9cf] space-y-2">
+              <div className="flex justify-between">
+                <span className="text-[#4a454c]">Allotted Department:</span>
+                <span className="font-bold text-[#33253c] text-sm">{meritItem?.course || application?.course.primaryCourse || 'B.Tech Computer Science & Engineering'}</span>
               </div>
+              <div className="flex justify-between">
+                <span className="text-[#4a454c]">Allotted Category / Seat:</span>
+                <span className="font-semibold text-emerald-800">{meritItem?.allottedSeat || 'Open Merit - General Category'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#4a454c]">Merit Rank:</span>
+                <span className="font-bold text-[#33253c]">#{meritItem?.rank || 14} (Score: {meritItem?.meritScore || 96.5}%)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#4a454c]">Reporting Campus:</span>
+                <span className="font-semibold text-[#1e1c17]">Salt Lake Electronics Complex, Kolkata</span>
+              </div>
+            </div>
+
+            <p className="text-[#4a454c]">
+              To finalize this allotment, please complete physical document verification at the admissions desk between the scheduled counseling dates with all original credentials.
+            </p>
+          </div>
+
+          <div className="pt-4 border-t border-[#ded9cf] flex items-center justify-between">
+            <div className="flex items-center gap-2 text-emerald-800 text-xs font-semibold">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <span>Official Institutional Registrar Seal</span>
+            </div>
+            <div className="text-right">
+              <div className="text-xs font-serif italic text-[#33253c] font-bold">Prof. Dr. A. K. Banerjee</div>
+              <div className="text-[10px] text-[#4a454c]">Dean of Admissions, IEM Kolkata</div>
             </div>
           </div>
         </div>
 
-        <div className="p-4 border-t border-[#1E293B] bg-[#030712] flex justify-end print:hidden font-mono">
+        <div className="p-4 border-t border-[#ded9cf] bg-[#fdfbf5] flex justify-end gap-2 print:hidden">
           <button
             onClick={onClose}
-            className="px-5 py-2 bg-[#2DD4BF] text-[#020617] text-xs font-bold rounded-lg hover:bg-teal-400 cursor-pointer transition-colors"
+            className="px-5 py-2 bg-[#33253c] text-white text-xs font-semibold rounded-lg hover:bg-[#4a3b53] cursor-pointer transition-colors"
           >
-            CLOSE
+            Close
           </button>
         </div>
       </div>

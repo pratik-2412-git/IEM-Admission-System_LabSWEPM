@@ -13,6 +13,9 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DB_FILE = path.join(DATA_DIR, 'iem_admission.json');
 
+// Active session tracking
+let activeUserId: string | null = 'usr_candidate_001';
+
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -500,6 +503,50 @@ app.get('/api/health', (req, res) => {
 });
 
 // Authentication
+app.get('/api/auth/me', (req, res) => {
+  const db = readDatabase();
+  let user = null;
+
+  // 1. Check Authorization Bearer header
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7);
+    const match = token.match(/^iem_token_([^_]+(?:_[^_]+)*?)_\d+$/);
+    const uid = match ? match[1] : null;
+    if (uid) {
+      user = db.users.find(u => u.id === uid);
+    }
+  }
+
+  // 2. Fallback to active session
+  if (!user && activeUserId) {
+    user = db.users.find(u => u.id === activeUserId);
+  }
+
+  // 3. Fallback to candidate user
+  if (!user) {
+    user = db.users.find(u => u.role === 'candidate') || db.users[0];
+  }
+
+  if (!user) {
+    return res.json({ user: null, application: null });
+  }
+
+  const application = db.applications.find(a => a.userId === user.id || a.id === user.applicationId) || null;
+  const { password: _, ...userSafe } = user;
+
+  res.json({
+    user: userSafe,
+    application,
+    token: `iem_token_${user.id}_${Date.now()}`,
+  });
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  activeUserId = null;
+  res.json({ success: true, message: 'Logged out successfully' });
+});
+
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
   const db = readDatabase();
@@ -513,6 +560,7 @@ app.post('/api/auth/login', (req, res) => {
     return res.status(401).json({ error: 'Invalid password. Try "password123" for candidate or "admin123" for admin.' });
   }
 
+  activeUserId = user.id;
   addAuditLog('USER_LOGIN', user.email, 'users', user.id, `User logged in as ${user.role}`);
   
   const application = db.applications.find(a => a.userId === user.id || a.id === user.applicationId);
@@ -607,6 +655,7 @@ app.post('/api/auth/register', (req, res) => {
     read: false,
   });
 
+  activeUserId = userId;
   writeDatabase(db);
   addAuditLog('USER_REGISTERED', email, 'users', userId, `Registered with Application ID ${appId}`);
 
@@ -655,10 +704,10 @@ app.put('/api/applications/:id', (req, res) => {
   res.json(db.applications[index]);
 });
 
-app.post('/api/applications/submit', (req, res) => {
-  const { applicationId } = req.body;
+const handleApplicationSubmit = (req: express.Request, res: express.Response) => {
+  const applicationId = req.params.id || req.body.applicationId;
   const db = readDatabase();
-  const index = db.applications.findIndex(a => a.id === applicationId);
+  const index = db.applications.findIndex(a => a.id === applicationId || a.userId === applicationId);
 
   if (index === -1) {
     return res.status(404).json({ error: 'Application not found' });
@@ -669,20 +718,23 @@ app.post('/api/applications/submit', (req, res) => {
   db.applications[index].updatedAt = new Date().toISOString();
 
   // Add notification
-  db.notifications.push({
+  db.notifications.unshift({
     id: `notif_${Date.now()}`,
     userId: db.applications[index].userId,
     title: 'Application Submitted for Review',
-    message: `Your application ${applicationId} is now Under Review by our admissions committee.`,
+    message: `Your application ${db.applications[index].id} is now Under Review by our admissions committee.`,
     type: 'status',
     createdAt: new Date().toISOString(),
     read: false,
   });
 
   writeDatabase(db);
-  addAuditLog('APPLICATION_SUBMITTED', db.applications[index].userId, 'applications', applicationId, 'Application submitted for official review');
-  res.json({ success: true, application: db.applications[index] });
-});
+  addAuditLog('APPLICATION_SUBMITTED', db.applications[index].userId, 'applications', db.applications[index].id, 'Application submitted for official review');
+  res.json({ success: true, application: db.applications[index], ...db.applications[index] });
+};
+
+app.post('/api/applications/:id/submit', handleApplicationSubmit);
+app.post('/api/applications/submit', handleApplicationSubmit);
 
 // Document endpoints
 app.get('/api/documents/:applicationId', (req, res) => {
@@ -692,7 +744,7 @@ app.get('/api/documents/:applicationId', (req, res) => {
   res.json(docs);
 });
 
-app.post('/api/documents/upload', (req, res) => {
+const handleDocumentUpload = (req: express.Request, res: express.Response) => {
   const { applicationId, type, title, description, fileName, fileSize, fileUrl } = req.body;
   if (!applicationId || !type || !fileName) {
     return res.status(400).json({ error: 'Missing required document fields' });
@@ -729,8 +781,11 @@ app.post('/api/documents/upload', (req, res) => {
 
   writeDatabase(db);
   addAuditLog('DOCUMENT_UPLOADED', applicationId, 'documents', newDoc.id, `Uploaded ${fileName} (${type})`);
-  res.json({ success: true, document: newDoc });
-});
+  res.json({ success: true, document: newDoc, ...newDoc });
+};
+
+app.post('/api/documents/upload', handleDocumentUpload);
+app.post('/api/documents', handleDocumentUpload);
 
 app.delete('/api/documents/:id', (req, res) => {
   const { id } = req.params;
@@ -772,12 +827,13 @@ app.get('/api/payments/:applicationId', (req, res) => {
   res.json(paymentList);
 });
 
-app.post('/api/payments/pay', (req, res) => {
-  const { applicationId, amount = 50, method = 'card', details = {} } = req.body;
+const handlePaymentProcess = (req: express.Request, res: express.Response) => {
+  const { applicationId, amount = 50, method, paymentMethod, details = {} } = req.body;
   if (!applicationId) {
     return res.status(400).json({ error: 'applicationId is required' });
   }
 
+  const selectedMethod = method || paymentMethod || 'card';
   const db = readDatabase();
   const txnId = `TXN${Math.floor(100000000 + Math.random() * 900000000)}`;
   const invNumber = `INV-IEM-2024-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -789,7 +845,7 @@ app.post('/api/payments/pay', (req, res) => {
     amount: Number(amount),
     currency: 'USD',
     status: 'success' as const,
-    method: method as any,
+    method: selectedMethod as any,
     paidAt: new Date().toISOString(),
     invoiceNumber: invNumber,
     details: details || { cardLast4: '4242' },
@@ -812,9 +868,12 @@ app.post('/api/payments/pay', (req, res) => {
   }
 
   writeDatabase(db);
-  addAuditLog('PAYMENT_PROCESSED', applicationId, 'payments', paymentRecord.id, `Payment $${amount} verified via ${method}`);
-  res.json({ success: true, payment: paymentRecord });
-});
+  addAuditLog('PAYMENT_PROCESSED', applicationId, 'payments', paymentRecord.id, `Payment $${amount} verified via ${selectedMethod}`);
+  res.json({ success: true, payment: paymentRecord, ...paymentRecord });
+};
+
+app.post('/api/payments/pay', handlePaymentProcess);
+app.post('/api/payments', handlePaymentProcess);
 
 // Merit List
 app.get('/api/merit-list', (req, res) => {
@@ -839,11 +898,49 @@ app.get('/api/merit-list', (req, res) => {
 });
 
 // Notifications
+app.get('/api/notifications', (req, res) => {
+  const { userId } = req.query;
+  const db = readDatabase();
+  if (userId) {
+    const notifs = db.notifications.filter(n => n.userId === userId || n.userId === 'all');
+    return res.json(notifs);
+  }
+  if (activeUserId) {
+    const notifs = db.notifications.filter(n => n.userId === activeUserId || n.userId === 'all');
+    return res.json(notifs);
+  }
+  res.json(db.notifications);
+});
+
 app.get('/api/notifications/:userId', (req, res) => {
   const { userId } = req.params;
   const db = readDatabase();
   const notifs = db.notifications.filter(n => n.userId === userId || n.userId === 'all');
   res.json(notifs);
+});
+
+app.post('/api/notifications/:id/read', (req, res) => {
+  const { id } = req.params;
+  const db = readDatabase();
+  const n = db.notifications.find(x => x.id === id);
+  if (n) {
+    n.read = true;
+    writeDatabase(db);
+  }
+  res.json({ success: true, notification: n });
+});
+
+app.post('/api/notifications/read-all', (req, res) => {
+  const { userId } = req.body || {};
+  const targetId = userId || activeUserId;
+  const db = readDatabase();
+  db.notifications.forEach(n => {
+    if (!targetId || n.userId === targetId || n.userId === 'all') {
+      n.read = true;
+    }
+  });
+  writeDatabase(db);
+  res.json({ success: true, message: 'All notifications marked as read' });
 });
 
 app.post('/api/notifications/mark-read', (req, res) => {
@@ -1030,6 +1127,55 @@ app.post('/api/database/admin/action', (req, res) => {
     default:
       return res.status(400).json({ error: `Unknown action: ${action}` });
   }
+});
+
+// Direct Admin Actions
+app.post('/api/admin/verify-documents', (req, res) => {
+  const { applicationId = 'IEM-2024-001' } = req.body;
+  const db = readDatabase();
+  db.documents.forEach(d => {
+    if (d.applicationId === applicationId) {
+      d.status = 'verified';
+      d.verifiedAt = new Date().toISOString();
+    }
+  });
+  const appItem = db.applications.find(a => a.id === applicationId);
+  if (appItem) {
+    appItem.status = 'docs_verified';
+  }
+  addAuditLog('DOCS_VERIFIED_ALL', 'Admissions Dean', 'applications', applicationId, 'All uploaded documents verified');
+  writeDatabase(db);
+  res.json({ success: true, message: `All documents for ${applicationId} have been verified!` });
+});
+
+app.post('/api/admin/allot-seat', (req, res) => {
+  const { applicationId = 'IEM-2024-001', course = 'B.Tech in Computer Science & Engineering (CSE)', seat = 'CSE-A-004' } = req.body;
+  const db = readDatabase();
+  const meritItem = db.meritList.find(m => m.applicationId === applicationId);
+  if (meritItem) {
+    meritItem.allottedSeat = seat;
+    meritItem.status = 'Allotted';
+  }
+  const appItem = db.applications.find(a => a.id === applicationId);
+  if (appItem) {
+    appItem.status = 'seat_allotted';
+  }
+  addAuditLog('SEAT_ALLOTTED', 'Admissions Committee', 'meritList', applicationId, `Seat ${seat} allocated for ${course}`);
+  writeDatabase(db);
+  res.json({ success: true, message: `Seat ${seat} allotted to ${applicationId}` });
+});
+
+app.post('/api/admin/reset-database', (req, res) => {
+  const initial = getInitialDatabase();
+  writeDatabase(initial);
+  activeUserId = 'usr_candidate_001';
+  addAuditLog('DATABASE_RESET', 'SYSTEM_ADMIN', 'database', 'all', 'Database restored to clean default seed state');
+  res.json({ success: true, message: 'Database reset to initial demo state successfully' });
+});
+
+// Catch-all for any unmatched API route so it NEVER falls through to Vite index.html
+app.all('/api/*', (req, res) => {
+  res.status(404).json({ error: `API route not found: ${req.method} ${req.originalUrl}` });
 });
 
 // ==========================================

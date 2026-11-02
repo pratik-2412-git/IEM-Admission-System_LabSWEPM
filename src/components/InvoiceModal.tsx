@@ -1,7 +1,6 @@
 import React from 'react';
 import { X, Printer, Receipt, CheckCircle2 } from 'lucide-react';
 import { Application, PaymentRecord } from '../types';
-import { IEMLogo } from './IEMLogo';
 
 interface InvoiceModalProps {
   isOpen: boolean;
@@ -19,32 +18,32 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
   if (!isOpen) return null;
 
   const txnId = payment?.transactionId || 'TXN987654321';
-  const invoiceNum = payment?.invoiceNumber || 'INV-2024-001';
+  const invoiceNum = payment?.invoiceNumber || 'INV-2026-001';
   const amount = payment?.amount || 50.00;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 md:p-6 overflow-y-auto text-[#F8FAFC]">
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-3 md:p-6 overflow-y-auto text-[#1e1c17]">
       <div 
         id="fee-invoice-modal"
-        className="bg-[#0F172A] max-w-2xl w-full rounded-xl border border-[#1E293B] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="bg-white max-w-2xl w-full rounded-2xl border border-[#ded9cf] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
       >
         {/* Toolbar */}
-        <div className="p-4 border-b border-[#1E293B] bg-[#030712] flex justify-between items-center print:hidden">
+        <div className="p-4 border-b border-[#ded9cf] bg-[#fdfbf5] flex justify-between items-center print:hidden">
           <div className="flex items-center gap-2">
-            <Receipt className="w-4 h-4 text-teal-400" />
-            <h3 className="font-headline font-bold text-sm text-[#F8FAFC]">Fee Payment Tax Invoice</h3>
+            <Receipt className="w-4 h-4 text-[#33253c]" />
+            <h3 className="font-headline font-semibold text-sm text-[#33253c]">Fee Payment Tax Invoice</h3>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => window.print()}
-              className="p-2 rounded-lg border border-[#1E293B] bg-[#0F172A] text-teal-400 hover:bg-slate-800 text-xs font-mono font-medium flex items-center gap-1.5 cursor-pointer"
+              className="p-2 rounded-lg border border-[#33253c] text-[#33253c] hover:bg-[#f1ebdb] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>PRINT_INVOICE</span>
+              <span>Print Invoice</span>
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 text-[#4a454c] hover:text-[#1e1c17] hover:bg-[#f0eee6] rounded-lg transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -52,85 +51,91 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
         </div>
 
         {/* Invoice Body */}
-        <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 text-[#F8FAFC] font-mono">
-          <div className="flex justify-between items-start border-b border-[#1E293B] pb-4">
+        <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 text-[#1e1c17]">
+          <div className="flex justify-between items-start border-b border-[#ded9cf] pb-4">
             <div className="flex items-center gap-3">
-              <IEMLogo size="lg" variant="icon" />
+              <div className="w-10 h-10 rounded-xl bg-[#33253c] text-white flex items-center justify-center font-bold text-xs">
+                IEM
+              </div>
               <div>
-                <h2 className="font-headline font-bold text-base md:text-lg text-[#F8FAFC]">IEM Admission Processing Cell</h2>
-                <p className="text-xs text-slate-400">GSTIN: 19AAATI1234F1Z8</p>
-                <p className="text-xs text-slate-400">EP-Block, Salt Lake Electronic Complex, Kolkata 700091</p>
+                <h2 className="font-headline font-semibold text-base text-[#33253c]">IEM Admission Processing Cell</h2>
+                <p className="text-xs text-[#4a454c]">Salt Lake Campus, Sector V, Bidhannagar, Kolkata 700091</p>
+                <p className="text-[11px] text-[#7b776d]">GSTIN: 19AAATI9982D1Z5</p>
               </div>
             </div>
+
             <div className="text-right">
-              <span className="text-xs font-bold text-teal-400 block">INVOICE #{invoiceNum}</span>
-              <span className="text-[11px] text-slate-400">Date: {new Date(payment?.paidAt || Date.now()).toLocaleDateString()}</span>
+              <span className="text-[10px] text-[#4a454c] uppercase block">Tax Invoice No.</span>
+              <span className="font-bold text-[#33253c] font-mono text-sm">{invoiceNum}</span>
+              <span className="text-[11px] text-[#4a454c] block mt-0.5">Date: {new Date().toLocaleDateString()}</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 text-xs bg-[#030712] p-4 rounded-lg border border-[#1E293B]">
+          {/* Billed To */}
+          <div className="grid grid-cols-2 gap-4 text-xs bg-[#f9f6ed] p-4 rounded-xl border border-[#ded9cf]">
             <div>
-              <p className="font-semibold text-slate-400 text-[10px] uppercase">Billed To (Applicant):</p>
-              <p className="font-bold text-[#F8FAFC] text-sm mt-0.5">{application?.personal.fullName || 'Aanya Sharma'}</p>
-              <p className="text-slate-400">App ID: {application?.id || 'IEM-2026-001'}</p>
-              <p className="text-slate-400">{application?.personal.email}</p>
+              <span className="text-[10px] font-semibold text-[#4a454c] uppercase block">Billed To (Candidate):</span>
+              <p className="font-bold text-sm text-[#1e1c17] mt-0.5">{application?.personal.fullName || 'Registered Candidate'}</p>
+              <p className="text-[#4a454c] mt-0.5 font-mono">App ID: {application?.id || 'IEM-2026-001'}</p>
+              <p className="text-[#4a454c]">{application?.personal.email}</p>
             </div>
-            <div>
-              <p className="font-semibold text-slate-400 text-[10px] uppercase">Payment Particulars:</p>
-              <p className="text-slate-300"><span className="text-slate-400">Txn ID:</span> {txnId}</p>
-              <p className="text-slate-300"><span className="text-slate-400">Method:</span> {payment?.paymentMethod?.toUpperCase() || 'CARD (ONLINE)'}</p>
-              <p className="text-teal-400 font-bold mt-1 uppercase text-[11px]">STATUS: COMPLETED / PAID</p>
+            <div className="text-right">
+              <span className="text-[10px] font-semibold text-[#4a454c] uppercase block">Payment Method:</span>
+              <p className="font-bold text-sm text-[#1e1c17] mt-0.5">{payment?.paymentMethod || 'Online Gateway'}</p>
+              <p className="text-[#4a454c] font-mono text-[11px]">Txn: {txnId}</p>
+              <p className="text-emerald-700 font-semibold mt-1">STATUS: COMPLETED</p>
             </div>
           </div>
 
           {/* Line Items */}
-          <table className="w-full text-left text-xs border-collapse font-mono">
-            <thead>
-              <tr className="border-b border-[#1E293B] text-slate-400 text-[10px] uppercase">
-                <th className="py-2">Description</th>
-                <th className="py-2 text-right">SAC Code</th>
-                <th className="py-2 text-right">Amount (USD)</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#1E293B]">
-              <tr>
-                <td className="py-2.5">
-                  <span className="font-semibold text-slate-200 block">Application Processing &amp; Assessment Fee</span>
-                  <span className="text-[11px] text-slate-400">Undergraduate Engineering Admissions Cycle 2026</span>
-                </td>
-                <td className="py-2.5 text-right text-slate-400">999293</td>
-                <td className="py-2.5 text-right font-semibold text-slate-100">$45.00</td>
-              </tr>
-              <tr>
-                <td className="py-2.5">
-                  <span className="font-semibold text-slate-200 block">Document Scrutiny &amp; Verification Charge</span>
-                  <span className="text-[11px] text-slate-400">Central Registrar Online Verification</span>
-                </td>
-                <td className="py-2.5 text-right text-slate-400">999299</td>
-                <td className="py-2.5 text-right font-semibold text-slate-100">$5.00</td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr className="border-t border-[#1E293B] font-bold text-sm">
-                <td className="py-3" colSpan={2}>Total Paid:</td>
-                <td className="py-3 text-right text-teal-400">${amount.toFixed(2)}</td>
-              </tr>
-            </tfoot>
-          </table>
+          <div>
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="bg-[#f9f6ed] text-[#4a454c] font-semibold uppercase text-[10px] tracking-wider border-b border-[#ded9cf]">
+                  <th className="py-2.5 px-3">Item Description</th>
+                  <th className="py-2.5 px-3 text-center">HSN/SAC</th>
+                  <th className="py-2.5 px-3 text-right">Qty</th>
+                  <th className="py-2.5 px-3 text-right">Rate</th>
+                  <th className="py-2.5 px-3 text-right">Amount (USD)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#ded9cf]/60">
+                <tr>
+                  <td className="py-3 px-3">
+                    <p className="font-semibold text-[#1e1c17]">IEM Admission Processing &amp; Scrutiny Fee</p>
+                    <p className="text-[11px] text-[#4a454c]">Round 1 Evaluation, Counseling &amp; Verification</p>
+                  </td>
+                  <td className="py-3 px-3 text-center text-[#4a454c] font-mono">999293</td>
+                  <td className="py-3 px-3 text-right">1</td>
+                  <td className="py-3 px-3 text-right font-mono">${amount.toFixed(2)}</td>
+                  <td className="py-3 px-3 text-right font-bold font-mono">${amount.toFixed(2)}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr className="border-t border-[#ded9cf] font-semibold">
+                  <td colSpan={4} className="py-3 px-3 text-right text-xs">Total Amount Paid:</td>
+                  <td className="py-3 px-3 text-right text-sm font-bold text-[#33253c] font-mono">${amount.toFixed(2)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
 
-          <div className="p-3 bg-[#030712] border border-[#1E293B] rounded-lg text-[11px] text-slate-300 flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
-            <span>This is an automated computer-generated tax invoice verified under secure ledger records.</span>
+          <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-800">
+            <span className="flex items-center gap-1.5 font-semibold">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              Official Electronic Receipt Generated &amp; Verified
+            </span>
+            <span className="font-mono text-[11px]">GATEWAY: STRIPE_IEM_LIVE</span>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-[#1E293B] bg-[#030712] flex justify-end print:hidden font-mono">
+        <div className="p-4 border-t border-[#ded9cf] bg-[#fdfbf5] flex justify-end gap-2 print:hidden">
           <button
             onClick={onClose}
-            className="px-5 py-2 bg-[#2DD4BF] text-[#020617] text-xs font-bold rounded-lg hover:bg-teal-400 cursor-pointer transition-colors"
+            className="px-5 py-2 bg-[#33253c] text-white text-xs font-semibold rounded-lg hover:bg-[#4a3b53] cursor-pointer transition-colors"
           >
-            CLOSE
+            Close
           </button>
         </div>
       </div>

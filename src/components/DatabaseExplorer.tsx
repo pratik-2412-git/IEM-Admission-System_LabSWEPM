@@ -46,8 +46,11 @@ export const DatabaseExplorer: React.FC<DatabaseExplorerProps> = ({
   const fetchSummary = async () => {
     try {
       const res = await fetch('/api/database/summary');
-      const data = await res.json();
-      setSummary(data);
+      const contentType = res.headers.get('content-type');
+      if (res.ok && contentType && contentType.includes('application/json')) {
+        const data = await res.json();
+        setSummary(data);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -57,8 +60,11 @@ export const DatabaseExplorer: React.FC<DatabaseExplorerProps> = ({
     setLoadingTable(true);
     try {
       const res = await fetch(`/api/database/tables/${tableName}`);
-      const data = await res.json();
-      setTableData(Array.isArray(data) ? data : []);
+      const contentType = res.headers.get('content-type');
+      if (res.ok && contentType && contentType.includes('application/json')) {
+        const data = await res.json();
+        setTableData(Array.isArray(data) ? data : []);
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -75,7 +81,8 @@ export const DatabaseExplorer: React.FC<DatabaseExplorerProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: queryInput }),
       });
-      const data = await res.json();
+      const contentType = res.headers.get('content-type');
+      const data = contentType && contentType.includes('application/json') ? await res.json() : { error: 'Invalid response from query engine' };
       const end = performance.now();
       setQueryExecutionTime(Math.round(end - start));
       setQueryResult(data);
@@ -95,8 +102,8 @@ export const DatabaseExplorer: React.FC<DatabaseExplorerProps> = ({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ applicationId: 'IEM-2024-001' }),
         });
-        const d = await res.json();
-        setActionMessage(d.message);
+        const d = res.headers.get('content-type')?.includes('application/json') ? await res.json() : {};
+        setActionMessage(d.message || 'Documents verified');
       } else if (action === 'allot_seat') {
         const res = await fetch('/api/admin/allot-seat', {
           method: 'POST',
@@ -107,8 +114,8 @@ export const DatabaseExplorer: React.FC<DatabaseExplorerProps> = ({
             seat: 'CSE-A-004',
           }),
         });
-        const d = await res.json();
-        setActionMessage(d.message);
+        const d = res.headers.get('content-type')?.includes('application/json') ? await res.json() : {};
+        setActionMessage(d.message || 'Seat allotted');
       } else if (action === 'simulate_applicant') {
         const randId = Math.floor(100 + Math.random() * 900);
         await fetch('/api/auth/register', {

@@ -33,83 +33,82 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   };
 
   return (
-    <div className="space-y-6 max-w-[800px] mx-auto pb-12 text-[#F8FAFC]">
-      <div>
-        <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-bold">Account Registry</span>
-        <h2 className="font-headline text-2xl md:text-3xl font-bold text-[#F8FAFC] tracking-tight mt-0.5">
+    <div className="space-y-6 max-w-[800px] mx-auto pb-12 text-[#1e1c17] transition-colors duration-300">
+      <div className="animate-fade-up">
+        <h1 className="font-headline text-2xl md:text-3xl font-semibold text-[#33253c] tracking-tight">
           Applicant Settings
-        </h2>
-        <p className="font-body text-xs md:text-sm text-slate-400 mt-1">
-          Manage candidate profile credentials, communication channels, and security settings.
+        </h1>
+        <p className="text-xs text-[#4a454c] mt-1">
+          Manage candidate profile credentials, communication channels, and notification settings.
         </p>
       </div>
 
-      <form onSubmit={handleSave} className="space-y-6">
+      <form onSubmit={handleSave} className="space-y-6 animate-fade-up stagger-1">
         {/* Profile Details */}
-        <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-6 shadow-sm space-y-4">
-          <h3 className="font-headline text-sm font-semibold text-[#F8FAFC] pb-2 border-b border-[#1E293B] flex items-center gap-2">
-            <UserIcon className="w-4 h-4 text-teal-400" />
+        <div className="bg-white/95 backdrop-blur-xs border border-[#ded9cf] rounded-xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.02)] space-y-4">
+          <h3 className="font-headline text-sm font-semibold text-[#33253c] pb-2 border-b border-[#ded9cf] flex items-center gap-2">
+            <UserIcon className="w-4 h-4 text-[#33253c]" />
             Account Information
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#1e1c17] mb-1">
                 Full Name
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3.5 py-2 text-sm rounded-lg border border-[#1E293B] focus:border-teal-400 bg-[#030712] text-slate-100 outline-none"
+                className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-[#ded9cf] focus:border-[#33253c] bg-[#fcfaf2] text-[#1e1c17] outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#1e1c17] mb-1">
                 Email Address
               </label>
               <input
                 type="email"
                 value={email}
                 disabled
-                className="w-full px-3.5 py-2 text-sm rounded-lg border border-[#1E293B] bg-slate-900/60 text-slate-400 outline-none cursor-not-allowed font-mono text-xs"
+                className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-[#ded9cf] bg-[#f0eee6] text-[#7b776d] outline-none cursor-not-allowed text-xs"
               />
             </div>
           </div>
         </div>
 
         {/* Communication Preferences */}
-        <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-6 shadow-sm space-y-4">
-          <h3 className="font-headline text-sm font-semibold text-[#F8FAFC] pb-2 border-b border-[#1E293B] flex items-center gap-2">
-            <Bell className="w-4 h-4 text-teal-400" />
+        <div className="bg-white/95 backdrop-blur-xs border border-[#ded9cf] rounded-xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.02)] space-y-4">
+          <h3 className="font-headline text-sm font-semibold text-[#33253c] pb-2 border-b border-[#ded9cf] flex items-center gap-2">
+            <Bell className="w-4 h-4 text-[#33253c]" />
             Notifications &amp; Alerts
           </h3>
 
           <div className="space-y-3 text-xs">
-            <label className="flex items-center justify-between p-3.5 bg-[#030712] rounded-lg border border-[#1E293B] cursor-pointer">
+            <label className="flex items-center justify-between p-3.5 bg-[#f9f6ed] rounded-lg border border-[#ded9cf] cursor-pointer">
               <div>
-                <p className="font-medium text-slate-200">Email Notifications</p>
-                <p className="text-slate-400 text-[11px]">Receive seat allotment status and exam alerts via email</p>
+                <p className="font-semibold text-[#1e1c17]">Email Notifications</p>
+                <p className="text-[#4a454c] text-[11px]">Receive seat allotment status and counseling alerts via email</p>
               </div>
               <input
                 type="checkbox"
                 checked={emailAlerts}
                 onChange={(e) => setEmailAlerts(e.target.checked)}
-                className="w-4 h-4 rounded accent-teal-400 bg-slate-900 border-[#1E293B]"
+                className="w-4 h-4 rounded accent-[#33253c] border-[#ded9cf] cursor-pointer"
               />
             </label>
 
-            <label className="flex items-center justify-between p-3.5 bg-[#030712] rounded-lg border border-[#1E293B] cursor-pointer">
+            <label className="flex items-center justify-between p-3.5 bg-[#f9f6ed] rounded-lg border border-[#ded9cf] cursor-pointer">
               <div>
-                <p className="font-medium text-slate-200">SMS Verification Alerts</p>
-                <p className="text-slate-400 text-[11px]">Get instant SMS updates on document verification</p>
+                <p className="font-semibold text-[#1e1c17]">SMS Verification Alerts</p>
+                <p className="text-[#4a454c] text-[11px]">Get instant SMS updates regarding document scrutiny and fee verification</p>
               </div>
               <input
                 type="checkbox"
                 checked={smsAlerts}
                 onChange={(e) => setSmsAlerts(e.target.checked)}
-                className="w-4 h-4 rounded accent-teal-400 bg-slate-900 border-[#1E293B]"
+                className="w-4 h-4 rounded accent-[#33253c] border-[#ded9cf] cursor-pointer"
               />
             </label>
           </div>
@@ -118,7 +117,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         {/* Action button */}
         <div className="flex items-center justify-between pt-2">
           {saved && (
-            <span className="text-xs text-teal-400 font-mono font-medium flex items-center gap-1.5">
+            <span className="text-xs text-emerald-700 font-semibold flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4" />
               Settings updated successfully!
             </span>
@@ -126,9 +125,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           <button
             type="submit"
             disabled={saving}
-            className="ml-auto px-6 py-2.5 rounded-lg bg-[#2DD4BF] hover:bg-teal-400 text-[#020617] text-xs font-bold shadow-sm shadow-teal-500/10 cursor-pointer transition-colors"
+            className="ml-auto px-6 py-2.5 rounded-lg bg-[#33253c] hover:bg-[#4a3b53] text-white text-xs font-semibold shadow-sm cursor-pointer transition-colors"
           >
-            {saving ? 'SAVING...' : 'SAVE_PREFERENCES'}
+            {saving ? 'Saving...' : 'Save Preferences'}
           </button>
         </div>
       </form>

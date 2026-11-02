@@ -43,17 +43,33 @@ export function App() {
   // Initial loading
   const [initialLoading, setInitialLoading] = useState(true);
 
+  // Safe JSON fetch helper to prevent unexpected token errors
+  const safeFetchJson = async <T,>(url: string, options?: RequestInit, fallback?: T): Promise<T> => {
+    try {
+      const res = await fetch(url, options);
+      if (!res.ok) return fallback as T;
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        return await res.json();
+      }
+      return fallback as T;
+    } catch (err) {
+      console.warn(`Fetch error for ${url}:`, err);
+      return fallback as T;
+    }
+  };
+
   const fetchAppData = async (appId: string) => {
     try {
       const [appRes, docsRes, paymentsRes, meritRes, notifsRes] = await Promise.all([
-        fetch(`/api/applications/${appId}`).then(r => r.ok ? r.json() : null),
-        fetch(`/api/documents/${appId}`).then(r => r.ok ? r.json() : []),
-        fetch(`/api/payments/${appId}`).then(r => r.ok ? r.json() : []),
-        fetch(`/api/merit-list?search=${appId}`).then(r => r.ok ? r.json() : []),
-        fetch('/api/notifications').then(r => r.ok ? r.json() : []),
+        safeFetchJson<Application | null>(`/api/applications/${appId}`, undefined, null),
+        safeFetchJson<DocumentItem[]>(`/api/documents/${appId}`, undefined, []),
+        safeFetchJson<PaymentRecord[]>(`/api/payments/${appId}`, undefined, []),
+        safeFetchJson<MeritItem[]>(`/api/merit-list?search=${appId}`, undefined, []),
+        safeFetchJson<NotificationItem[]>('/api/notifications', undefined, []),
       ]);
 
-      if (appRes) setApplication(appRes);
+      if (appRes && appRes.id) setApplication(appRes);
       if (Array.isArray(docsRes)) setDocuments(docsRes);
       if (Array.isArray(paymentsRes)) setPayments(paymentsRes);
       if (Array.isArray(meritRes) && meritRes.length > 0) {
@@ -68,17 +84,30 @@ export function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch('/api/auth/me');
-        if (res.ok) {
-          const data = await res.json();
+        const storedToken = localStorage.getItem('iem_token');
+        const headers: Record<string, string> = {};
+        if (storedToken) {
+          headers['Authorization'] = `Bearer ${storedToken}`;
+        }
+
+        const data = await safeFetchJson<{ user: User | null; application: Application | null; token?: string } | null>(
+          '/api/auth/me',
+          { headers },
+          null
+        );
+
+        if (data && data.user) {
           setUser(data.user);
           setApplication(data.application);
+          if (data.token) {
+            localStorage.setItem('iem_token', data.token);
+          }
           if (data.application?.id) {
             await fetchAppData(data.application.id);
           }
         }
       } catch (e) {
-        console.error(e);
+        console.error('Auth verification error:', e);
       } finally {
         setInitialLoading(false);
       }
@@ -98,6 +127,7 @@ export function App() {
 
   const handleLogout = async () => {
     try {
+      localStorage.removeItem('iem_token');
       await fetch('/api/auth/logout', { method: 'POST' });
     } catch (e) {}
     setUser(null);
@@ -137,7 +167,8 @@ export function App() {
         }),
       });
       if (res.ok) {
-        const newDoc = await res.json();
+        const data = await res.json();
+        const newDoc = data.document || data;
         setDocuments(prev => [...prev.filter(d => d.type !== type), newDoc]);
       }
     } catch (e) {
@@ -169,7 +200,8 @@ export function App() {
       }),
     });
     if (!res.ok) throw new Error('Payment failed');
-    const payment = await res.json();
+    const data = await res.json();
+    const payment = data.payment || data;
     setPayments(prev => [...prev, payment]);
     await fetchAppData(application.id);
     return payment;
@@ -179,9 +211,12 @@ export function App() {
     if (!application) return;
     const res = await fetch(`/api/applications/${application.id}/submit`, {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ applicationId: application.id }),
     });
     if (res.ok) {
-      const updated = await res.json();
+      const data = await res.json();
+      const updated = data.application || data;
       setApplication(updated);
       await fetchAppData(application.id);
     }
@@ -240,7 +275,7 @@ export function App() {
   const paymentRecord = payments.find(p => p.status === 'success');
 
   return (
-    <div className="min-h-screen bg-[#020617] text-[#F8FAFC] flex flex-col md:flex-row font-sans selection:bg-teal-500/20 selection:text-teal-300">
+    <div className="min-h-screen bg-[#fdfbf5] text-[#1e1c17] flex flex-col md:flex-row font-sans selection:bg-[#e7dcea] selection:text-[#33253c]">
       {/* Left Sidebar */}
       <Sidebar
         currentView={currentView}
@@ -256,52 +291,50 @@ export function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 md:ml-64 flex flex-col min-h-screen overflow-x-hidden bg-[#020617]">
-        {/* Top App Bar (Mobile toggle & Database Status chip) */}
-        <header className="sticky top-0 z-30 bg-[#030712]/80 backdrop-blur-md border-b border-[#1E293B] px-4 md:px-8 py-3.5 flex items-center justify-between">
+      <main className="flex-1 md:ml-64 flex flex-col min-h-screen overflow-x-hidden bg-[#fdfbf5]">
+        {/* Top App Bar */}
+        <header className="sticky top-0 z-30 bg-[#fdfbf5]/90 backdrop-blur-md border-b border-[#ded9cf] px-4 md:px-8 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3 md:gap-4">
             <button
               id="mobile-sidebar-toggle-btn"
               onClick={() => setMobileSidebarOpen(true)}
-              className="md:hidden p-2 text-slate-400 hover:text-white hover:bg-slate-800/60 rounded-lg border border-[#1E293B]"
+              className="md:hidden p-2 text-[#4a454c] hover:text-[#1e1c17] hover:bg-[#f0eee6] rounded-lg border border-[#ded9cf]"
               aria-label="Open navigation menu"
             >
               <Menu className="w-4 h-4" />
             </button>
 
             <div className="flex md:hidden items-center gap-2">
-              <IEMLogo size="sm" variant="icon" />
-              <span className="font-headline font-bold text-xs text-[#F8FAFC]">IEM KOLKATA</span>
+              <span className="font-headline font-semibold text-xs text-[#33253c]">IEM KOLKATA</span>
             </div>
 
-            <div className="hidden sm:flex items-center gap-3">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-bold">Cycle</span>
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-900 border border-[#1E293B]">
-                <div className="w-1.5 h-1.5 rounded-full bg-teal-400"></div>
-                <span className="text-xs font-mono text-teal-400">2026-2027 Admissions</span>
+            <div className="hidden sm:flex items-center gap-2.5">
+              <div className="flex items-center gap-2 px-3 py-1 bg-[#f9f6ed] border border-[#ded9cf] rounded-full text-xs text-[#4a454c] font-medium">
+                <div className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></div>
+                <span>Admissions 2026-2027 Cycle</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             {/* Live Database Explorer Quick Indicator */}
             <button
               id="header-live-db-btn"
               onClick={() => setDbExplorerOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[#0F172A] hover:bg-slate-800 border border-[#1E293B] rounded-lg text-xs font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#f9f6ed] hover:bg-[#f0eee6] border border-[#ded9cf] rounded-lg text-xs font-medium text-[#4a454c] hover:text-[#1e1c17] transition-colors cursor-pointer"
               title="Inspect backend JSON Database"
             >
-              <Database className="w-3.5 h-3.5 text-teal-400" />
-              <span className="hidden xs:inline font-mono text-[11px]">DB_ACTIVE</span>
-              <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+              <Database className="w-3.5 h-3.5 text-[#63603c]" />
+              <span className="hidden xs:inline font-mono text-[11px] font-medium">Live DB</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping" />
             </button>
 
             <button
               id="header-merit-list-btn"
               onClick={() => setMeritModalOpen(true)}
-              className="flex items-center gap-2 px-3.5 py-1.5 bg-[#2DD4BF] hover:bg-teal-400 text-[#020617] rounded-lg text-xs font-bold shadow-sm shadow-teal-500/10 transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-3.5 py-1.5 bg-[#33253c] hover:bg-[#4a3b53] text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer"
             >
-              <Award className="w-3.5 h-3.5 text-[#020617]" />
+              <Award className="w-3.5 h-3.5 text-amber-300" />
               <span className="hidden sm:inline">Merit List</span>
             </button>
           </div>
@@ -341,12 +374,18 @@ export function App() {
           {currentView === 'documents' && (
             <DocumentUploadView
               documents={documents}
-              applicationId={application?.id || 'IEM-2024-001'}
+              applicationId={application?.id || 'IEM-2026-001'}
               onUploadDocument={handleUploadDocument}
               onDeleteDocument={handleDeleteDocument}
               onPreviousStep={() => setCurrentView('form')}
               onSaveAndContinue={() => setCurrentView('payment')}
               onPreviewDoc={(doc) => setPreviewDoc(doc)}
+              onStepClick={(s) => {
+                if (s === 1) setCurrentView('form');
+                if (s === 2) setCurrentView('documents');
+                if (s === 3) setCurrentView('payment');
+                if (s === 4) setCurrentView('status');
+              }}
             />
           )}
 
@@ -358,6 +397,12 @@ export function App() {
               onPreviousStep={() => setCurrentView('documents')}
               onContinueToSubmit={() => setCurrentView('status')}
               onViewInvoice={() => setInvoiceModalOpen(true)}
+              onStepClick={(s) => {
+                if (s === 1) setCurrentView('form');
+                if (s === 2) setCurrentView('documents');
+                if (s === 3) setCurrentView('payment');
+                if (s === 4) setCurrentView('status');
+              }}
             />
           )}
 
@@ -370,6 +415,12 @@ export function App() {
               onPreviousStep={() => setCurrentView('payment')}
               onGoToDashboard={() => setCurrentView('dashboard')}
               onOpenReceipt={() => setReceiptModalOpen(true)}
+              onStepClick={(s) => {
+                if (s === 1) setCurrentView('form');
+                if (s === 2) setCurrentView('documents');
+                if (s === 3) setCurrentView('payment');
+                if (s === 4) setCurrentView('status');
+              }}
             />
           )}
 
