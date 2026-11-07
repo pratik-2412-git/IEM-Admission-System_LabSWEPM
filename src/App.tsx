@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Sidebar 
-} from './components/Sidebar';
+import { Sidebar } from './components/Sidebar';
 import { AuthScreen } from './components/AuthScreen';
 import { DashboardView } from './components/DashboardView';
 import { ApplicationFormView } from './components/ApplicationFormView';
@@ -16,9 +14,9 @@ import { InvoiceModal } from './components/InvoiceModal';
 import { AllotmentLetterModal } from './components/AllotmentLetterModal';
 import { NotificationsView } from './components/NotificationsView';
 import { SettingsView } from './components/SettingsView';
-import { IEMLogo } from './components/IEMLogo';
+import { AdminPortalView } from './components/AdminPortalView';
 import { User, Application, DocumentItem, PaymentRecord, MeritItem, NotificationItem } from './types';
-import { Menu, Database, Award, Bell, ShieldCheck } from 'lucide-react';
+import { Menu, Database, Award, Bell } from 'lucide-react';
 
 export function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -43,7 +41,7 @@ export function App() {
   // Initial loading
   const [initialLoading, setInitialLoading] = useState(true);
 
-  // Safe JSON fetch helper to prevent unexpected token errors
+  // Safe JSON fetch helper
   const safeFetchJson = async <T,>(url: string, options?: RequestInit, fallback?: T): Promise<T> => {
     try {
       const res = await fetch(url, options);
@@ -116,9 +114,9 @@ export function App() {
     checkAuth();
   }, []);
 
-  const handleLoginSuccess = async (loggedInUser: User, loggedInApp: Application) => {
+  const handleLoginSuccess = async (loggedInUser: User, loggedInApp?: Application | null) => {
     setUser(loggedInUser);
-    setApplication(loggedInApp);
+    setApplication(loggedInApp || null);
     setCurrentView('dashboard');
     if (loggedInApp?.id) {
       await fetchAppData(loggedInApp.id);
@@ -187,19 +185,20 @@ export function App() {
     }
   };
 
+  // MVP Dummy Payment strictly at ₹0.00
   const handleProcessPayment = async (amount: number, method: string, details?: any) => {
-    if (!application) throw new Error('No active application');
+    if (!application) throw new Error('No active application found');
     const res = await fetch('/api/payments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         applicationId: application.id,
-        amount,
+        amount: 0.00,
         paymentMethod: method,
         details,
       }),
     });
-    if (!res.ok) throw new Error('Payment failed');
+    if (!res.ok) throw new Error('Payment recording failed');
     const data = await res.json();
     const payment = data.payment || data;
     setPayments(prev => [...prev, payment]);
@@ -242,19 +241,16 @@ export function App() {
 
   if (initialLoading) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-[#020617] text-slate-100 font-sans">
+      <div className="min-h-screen w-full flex items-center justify-center bg-[#fdfbf5] text-[#1e1c17] font-sans">
         <div className="text-center space-y-4">
-          <div className="w-10 h-10 border-2 border-teal-400 border-t-transparent rounded-full animate-spin mx-auto" />
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
-            <p className="font-mono text-xs text-slate-400 tracking-wider uppercase">Loading Admission Stack...</p>
-          </div>
+          <div className="w-8 h-8 border-2 border-[#33253c] border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="font-mono text-xs text-[#4a454c] tracking-wider uppercase">Loading Admission Stack...</p>
         </div>
       </div>
     );
   }
 
-  // If not logged in, render AuthScreen
+  // 1. Not Authenticated: Render Dual-Role Auth Screen
   if (!user) {
     return (
       <>
@@ -271,8 +267,32 @@ export function App() {
     );
   }
 
+  // 2. Authenticated as Admin: Render Dedicated Admin Portal
+  if (user.role === 'admin') {
+    return (
+      <>
+        <AdminPortalView
+          user={user}
+          onLogout={handleLogout}
+          onPreviewDocument={(doc) => setPreviewDoc(doc)}
+          onOpenDatabaseExplorer={() => setDbExplorerOpen(true)}
+        />
+        <DocumentPreviewModal
+          document={previewDoc}
+          onClose={() => setPreviewDoc(null)}
+        />
+        <DatabaseExplorer
+          isOpen={dbExplorerOpen}
+          onClose={() => setDbExplorerOpen(false)}
+          onDbModified={() => {}}
+        />
+      </>
+    );
+  }
+
+  // 3. Authenticated as Student: Render Student Admission Portal
   const unreadNotifsCount = notifications.filter(n => !n.read).length;
-  const paymentRecord = payments.find(p => p.status === 'success');
+  const paymentRecord = payments.find(p => p.status === 'paid' || p.status === 'success');
 
   return (
     <div className="min-h-screen bg-[#fdfbf5] text-[#1e1c17] flex flex-col md:flex-row font-sans selection:bg-[#e7dcea] selection:text-[#33253c]">
@@ -293,7 +313,7 @@ export function App() {
       {/* Main Content Area */}
       <main className="flex-1 md:ml-64 flex flex-col min-h-screen overflow-x-hidden bg-[#fdfbf5]">
         {/* Top App Bar */}
-        <header className="sticky top-0 z-30 bg-[#fdfbf5]/90 backdrop-blur-md border-b border-[#ded9cf] px-4 md:px-8 py-3 flex items-center justify-between">
+        <header className="sticky top-0 z-30 bg-[#fdfbf5] border-b border-[#ded9cf] px-4 md:px-8 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3 md:gap-4">
             <button
               id="mobile-sidebar-toggle-btn"
@@ -310,29 +330,28 @@ export function App() {
 
             <div className="hidden sm:flex items-center gap-2.5">
               <div className="flex items-center gap-2 px-3 py-1 bg-[#f9f6ed] border border-[#ded9cf] rounded-full text-xs text-[#4a454c] font-medium">
-                <div className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></div>
+                <div className="w-2 h-2 rounded-full bg-emerald-600"></div>
                 <span>Admissions 2026-2027 Cycle</span>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2.5">
-            {/* Live Database Explorer Quick Indicator */}
             <button
               id="header-live-db-btn"
               onClick={() => setDbExplorerOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[#f9f6ed] hover:bg-[#f0eee6] border border-[#ded9cf] rounded-lg text-xs font-medium text-[#4a454c] hover:text-[#1e1c17] transition-colors cursor-pointer"
-              title="Inspect backend JSON Database"
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#f9f6ed] hover:bg-[#f0eee6] border border-[#ded9cf] rounded-lg text-xs font-medium text-[#4a454c] hover:text-[#1e1c17] cursor-pointer"
+              title="Inspect backend Relational Database"
             >
               <Database className="w-3.5 h-3.5 text-[#63603c]" />
-              <span className="hidden xs:inline font-mono text-[11px] font-medium">Live DB</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping" />
+              <span className="hidden xs:inline font-mono text-[11px] font-medium">Relational DB</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
             </button>
 
             <button
               id="header-merit-list-btn"
               onClick={() => setMeritModalOpen(true)}
-              className="flex items-center gap-2 px-3.5 py-1.5 bg-[#33253c] hover:bg-[#4a3b53] text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-3.5 py-1.5 bg-[#33253c] hover:bg-[#4a3b53] text-white rounded-lg text-xs font-semibold shadow-xs cursor-pointer"
             >
               <Award className="w-3.5 h-3.5 text-amber-300" />
               <span className="hidden sm:inline">Merit List</span>

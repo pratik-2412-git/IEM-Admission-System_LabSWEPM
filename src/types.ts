@@ -1,8 +1,10 @@
+export type UserRole = 'student' | 'admin' | 'candidate';
+
 export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'candidate' | 'admin';
+  role: UserRole;
   applicationId: string;
   avatar: string;
   phone?: string;
@@ -25,69 +27,146 @@ export interface PersonalDetails {
   pincode?: string;
 }
 
-export interface AcademicDetails {
-  previousInstitution: string;
+export interface Class10Details {
+  schoolName: string;
+  board: 'CBSE' | 'ICSE' | 'WBCHSE' | 'Other' | string;
   yearOfPassing: string;
-  percentageCgpa: string;
+  fullMarks: number | string;
+  marksObtained: number | string;
+  percentage: number | string;
+}
+
+export interface Class12Details {
+  schoolName: string;
+  board: 'CBSE' | 'ISC' | 'WBCHSE' | 'Other' | string;
+  yearOfPassing: string;
+  stream: 'Science' | 'Commerce' | 'Arts' | 'Other' | string;
+  fullMarks: number | string;
+  marksObtained: number | string;
+  percentage: number | string;
+}
+
+export interface ExamEntry {
+  appeared: boolean;
+  percentile?: string;
+  rank?: string;
+}
+
+export interface EntranceExamDetails {
+  jeeMain: ExamEntry;
+  wbjee: ExamEntry;
+  iemjee: ExamEntry;
+}
+
+export interface CoursePreferences {
+  preference_1: string;
+  preference_2: string;
+  preference_3: string;
+}
+
+export interface AcademicDetails {
+  previousInstitution?: string;
+  yearOfPassing?: string;
+  percentageCgpa?: string;
   boardUniversity?: string;
   stream?: string;
   rollNumber?: string;
   entranceExam?: string;
   entranceScore?: string;
   entranceRank?: string;
+  class10?: Class10Details;
+  class12?: Class12Details;
+  entranceExams?: EntranceExamDetails;
 }
 
 export interface CourseSelection {
   primaryCourse: string;
   secondaryCourse?: string;
   campusPreference?: string;
+  preferences?: CoursePreferences;
+  preference_1?: string;
+  preference_2?: string;
+  preference_3?: string;
 }
 
 export type ApplicationStatus = 
   | 'draft'
+  | 'submitted'
   | 'under_review'
-  | 'docs_verified'
-  | 'merit_qualified'
+  | 'correction_required'
+  | 'resubmitted'
+  | 'approved'
+  | 'rejected'
   | 'seat_allotted'
-  | 'rejected';
+  | 'admission_confirmed'
+  | 'docs_verified'
+  | 'merit_qualified';
 
 export interface Application {
   id: string;
   userId: string;
+  studentId?: string;
+  applicationNumber?: string;
   status: ApplicationStatus;
   currentStep: 1 | 2 | 3 | 4;
   personal: PersonalDetails;
   academic: AcademicDetails;
+  class10?: Class10Details;
+  class12?: Class12Details;
+  entranceExams?: EntranceExamDetails;
   course: CourseSelection;
+  preferences?: CoursePreferences;
+  adminRemarks?: string;
   submittedAt: string | null;
   updatedAt: string;
+  verifiedBy?: string;
+  verifiedAt?: string;
 }
+
+export type DocumentType = 
+  | 'marksheet_10th'
+  | 'marksheet_12th'
+  | 'id_proof'
+  | 'photo'
+  | 'signature'
+  | 'entrance_scorecard'
+  | 'other';
+
+export type DocumentStatus = 'pending' | 'approved' | 'correction_required' | 'rejected' | 'uploaded' | 'verified';
 
 export interface DocumentItem {
   id: string;
   applicationId: string;
-  type: 'id_proof' | 'marksheet_12th' | 'photo' | 'marksheet_10th' | 'entrance_scorecard';
+  type: DocumentType | string;
   title: string;
-  description: string;
+  description?: string;
   fileName: string;
   fileSize: string;
   fileUrl?: string;
-  status: 'uploaded' | 'verified' | 'rejected' | 'pending';
+  filePath?: string;
+  status: DocumentStatus;
   uploadedAt: string;
   verifiedAt?: string;
+  verifiedBy?: string;
   remarks?: string;
+  adminRemarks?: string;
+  previousRemarks?: string;
 }
 
 export interface PaymentRecord {
   id: string;
   applicationId: string;
+  studentId?: string;
   transactionId: string;
+  transactionReference?: string;
   amount: number;
   currency: string;
-  status: 'success' | 'pending' | 'failed';
-  method?: 'card' | 'upi' | 'netbanking' | string;
-  paymentMethod?: 'card' | 'upi' | 'netbanking' | string;
+  status: 'paid' | 'success' | 'pending' | 'failed';
+  paymentStatus?: 'paid' | 'pending' | 'failed';
+  method?: string;
+  paymentMethod?: string;
   paidAt: string;
+  paymentDate?: string;
   invoiceNumber: string;
   details?: {
     cardLast4?: string;
@@ -105,18 +184,34 @@ export interface MeritItem {
   meritScore: number;
   course: string;
   allottedSeat: string | null;
-  status: 'Allotted' | 'Waiting List' | 'Confirmed' | 'Review';
+  status: 'Allotted' | 'Waiting List' | 'Confirmed' | 'Review' | 'Pending';
+}
+
+export interface SeatAllocation {
+  id: string;
+  applicationId: string;
+  studentId: string;
+  candidateName?: string;
+  course: string;
+  department: string;
+  campus: string;
+  seatNumber: string;
+  allocationStatus: 'allotted' | 'confirmed' | 'cancelled';
+  allottedAt: string;
+  allocatedBy?: string;
 }
 
 export interface NotificationItem {
   id: string;
   userId?: string;
+  recipientId?: string;
   title: string;
   message: string;
   type: 'payment' | 'document' | 'status' | 'announcement' | string;
   createdAt?: string;
   timestamp?: string;
   read: boolean;
+  isRead?: boolean;
   timeAgo?: string;
 }
 
@@ -141,10 +236,18 @@ export interface DatabaseStats {
 }
 
 export interface DatabaseSummary {
-  databaseFile: string;
-  fileSizeBytes: number;
-  lastModified: string;
-  counts: {
+  databaseFile?: string;
+  fileSizeBytes?: number;
+  lastModified?: string;
+  totalUsers?: number;
+  totalApplications?: number;
+  totalDocuments?: number;
+  totalPayments?: number;
+  meritListCount?: number;
+  verifiedDocsCount?: number;
+  totalRevenue?: number;
+  isSupabaseConfigured?: boolean;
+  counts?: {
     users: number;
     applications: number;
     documents: number;

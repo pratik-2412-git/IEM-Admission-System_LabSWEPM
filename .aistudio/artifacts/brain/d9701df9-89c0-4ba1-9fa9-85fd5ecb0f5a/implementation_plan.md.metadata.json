@@ -1,0 +1,6 @@
+{
+  "summary":  "Implementation plan for IEM Admission System application form enhancements (detailed Class 10/12 academic qualifications with auto-calculated percentages, conditional JEE Main/WBJEE/IEMJEE entrance exam details, 3 distinct course preferences), green tick submission indicator, rigorous 5-stage lifecycle checkmark logic, strict read-only admin applicant scrutiny view with VERIFIED vs SCRUTINIZE per document, and merit rank/seat allotment restricted strictly to the candidate's 3 preferences.",
+  "updatedAt":  "2026-11-07T09:42:33.492148852Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}

@@ -5,14 +5,14 @@ import {
   User, 
   GraduationCap, 
   CreditCard, 
-  ShieldCheck, 
   ArrowLeft, 
   Send,
   Download,
-  Check
+  Award,
+  AlertCircle
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { Application, DocumentItem, PaymentRecord } from '../types';
+import { IEM_COURSE_LABELS } from './ApplicationFormView';
 
 interface SubmitReviewViewProps {
   application: Application | null;
@@ -37,33 +37,41 @@ export const SubmitReviewView: React.FC<SubmitReviewViewProps> = ({
 }) => {
   const [agreed, setAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(application?.status !== 'draft');
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const paymentRecord = payments.find(p => p.status === 'success');
+  const isSubmitted = Boolean(
+    application && 
+    application.status !== 'draft' &&
+    ['submitted', 'under_review', 'correction_required', 'resubmitted', 'approved', 'rejected', 'seat_allotted', 'admission_confirmed'].includes(application.status)
+  );
+
+  const paymentRecord = payments.find(p => p.status === 'paid' || p.status === 'success');
+
+  const c10 = application?.class10 || application?.academic?.class10;
+  const c12 = application?.class12 || application?.academic?.class12;
+  const exams = application?.entranceExams || application?.academic?.entranceExams;
+
+  const pref1 = application?.preferences?.preference_1 || application?.course?.preference_1 || application?.course?.primaryCourse || 'CSE';
+  const pref2 = application?.preferences?.preference_2 || application?.course?.preference_2 || application?.course?.secondaryCourse || 'IT';
+  const pref3 = application?.preferences?.preference_3 || application?.course?.preference_3 || 'AIML';
 
   const handleSubmit = async () => {
     if (!agreed) return;
     setSubmitting(true);
+    setSubmitError(null);
     try {
       await onSubmitApplication();
-      setIsSubmitted(true);
-      try {
-        confetti({
-          particleCount: 120,
-          spread: 80,
-          origin: { y: 0.5 },
-          colors: ['#33253c', '#4a3b53', '#e7dcea', '#059669'],
-        });
-      } catch (e) {}
+    } catch (err: any) {
+      setSubmitError(err.message || 'Failed to submit application to admissions registry.');
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto pb-12 text-[#1e1c17] transition-colors duration-300">
+    <div className="max-w-4xl mx-auto pb-12 text-[#1e1c17]">
       {/* Header & Stepper */}
-      <div className="mb-8 animate-fade-up">
+      <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="font-headline text-2xl md:text-3xl font-semibold text-[#33253c] tracking-tight">
@@ -72,23 +80,23 @@ export const SubmitReviewView: React.FC<SubmitReviewViewProps> = ({
             <p className="text-xs text-[#4a454c] mt-0.5">Final verification before irreversible submission to admissions registry</p>
           </div>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#f9f6ed] border border-[#ded9cf] rounded-full text-xs text-[#4a454c] font-medium shadow-2xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-            <span>Final Declaration</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#f9f6ed] border border-[#ded9cf] rounded-full text-xs text-[#4a454c] font-medium">
+            <span className={`w-2 h-2 rounded-full ${isSubmitted ? 'bg-emerald-600' : 'bg-amber-600'}`}></span>
+            <span>{isSubmitted ? 'Official Submission Verified' : 'Final Declaration'}</span>
           </div>
         </div>
 
-        {/* Progress Stepper */}
+        {/* Progress Stepper (Static) */}
         <div className="flex items-center justify-between relative px-2 py-1">
           <div className="absolute left-6 right-6 top-5 h-0.5 bg-[#eae6da] z-0"></div>
-          <div className="animated-progress-bar absolute left-6 top-5 h-0.5 bg-[#33253c] z-0 w-[100%]"></div>
+          <div className="absolute left-6 top-5 h-0.5 bg-[#33253c] z-0 w-[100%]"></div>
 
           {/* Step 1 */}
           <div 
             onClick={() => onStepClick?.(1)}
-            className="relative z-10 flex flex-col items-center gap-2 group cursor-pointer"
+            className="relative z-10 flex flex-col items-center gap-2 cursor-pointer"
           >
-            <div className="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-md ring-4 ring-[#fdfbf5]">
+            <div className="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs ring-4 ring-[#fdfbf5]">
               ✓
             </div>
             <span className="text-xs font-semibold text-[#33253c]">Profile</span>
@@ -97,9 +105,9 @@ export const SubmitReviewView: React.FC<SubmitReviewViewProps> = ({
           {/* Step 2 */}
           <div 
             onClick={() => onStepClick?.(2)}
-            className="relative z-10 flex flex-col items-center gap-2 group cursor-pointer"
+            className="relative z-10 flex flex-col items-center gap-2 cursor-pointer"
           >
-            <div className="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-md ring-4 ring-[#fdfbf5]">
+            <div className="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs ring-4 ring-[#fdfbf5]">
               ✓
             </div>
             <span className="text-xs font-semibold text-[#33253c]">Documents</span>
@@ -108,9 +116,9 @@ export const SubmitReviewView: React.FC<SubmitReviewViewProps> = ({
           {/* Step 3 */}
           <div 
             onClick={() => onStepClick?.(3)}
-            className="relative z-10 flex flex-col items-center gap-2 group cursor-pointer"
+            className="relative z-10 flex flex-col items-center gap-2 cursor-pointer"
           >
-            <div className="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-md ring-4 ring-[#fdfbf5]">
+            <div className="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs ring-4 ring-[#fdfbf5]">
               ✓
             </div>
             <span className="text-xs font-semibold text-[#33253c]">Payment</span>
@@ -119,143 +127,273 @@ export const SubmitReviewView: React.FC<SubmitReviewViewProps> = ({
           {/* Step 4 (Active) */}
           <div 
             onClick={() => onStepClick?.(4)}
-            className="relative z-10 flex flex-col items-center gap-2 group cursor-pointer"
+            className="relative z-10 flex flex-col items-center gap-2 cursor-pointer"
           >
-            <div className="w-9 h-9 rounded-full bg-[#33253c] text-white flex items-center justify-center font-bold text-xs shadow-md ring-4 ring-[#fdfbf5]">
-              4
+            <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs ring-4 ring-[#fdfbf5] ${
+              isSubmitted ? 'bg-emerald-600 text-white' : 'bg-[#33253c] text-white'
+            }`}>
+              {isSubmitted ? '✓' : '4'}
             </div>
             <span className="text-xs font-semibold text-[#33253c]">Submit</span>
           </div>
         </div>
       </div>
 
-      {isSubmitted ? (
-        <div className="bg-white/95 backdrop-blur-xs border border-emerald-200 rounded-xl p-8 text-center space-y-6 shadow-[0_4px_24px_rgba(0,0,0,0.02)] animate-fade-up">
-          <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto border border-emerald-200">
-            <CheckCircle2 className="w-8 h-8" />
+      {/* Submission Confirmation Alert (Green Tick inside review card) */}
+      {isSubmitted && (
+        <div id="review-green-tick-card" className="mb-6 bg-white border-2 border-emerald-500 rounded-xl p-6 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-300">
+              <CheckCircle2 className="w-7 h-7 stroke-[2.5]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-headline text-lg font-bold text-[#33253c]">
+                  Application Successfully Submitted
+                </h3>
+                <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full border border-emerald-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  Verified in Database
+                </span>
+              </div>
+              <p className="text-xs text-[#4a454c] mt-0.5">
+                Application Number: <strong className="font-mono text-[#33253c]">{application?.applicationNumber || application?.id}</strong> • Submitted at {application?.submittedAt ? new Date(application.submittedAt).toLocaleString() : 'Registered Session'}
+              </p>
+            </div>
           </div>
 
-          <div>
-            <h2 className="font-headline text-2xl font-semibold text-[#33253c]">
-              Application Officially Submitted!
-            </h2>
-            <p className="text-xs md:text-sm text-[#4a454c] max-w-md mx-auto mt-1">
-              Your application <strong className="text-[#33253c] font-semibold">{application?.id}</strong> is locked and registered in the institutional admissions verification queue.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={onOpenReceipt}
-              className="px-5 py-2.5 rounded-lg border border-[#33253c] text-[#33253c] hover:bg-[#f1ebdb] text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
+              className="px-4 py-2 rounded-lg border border-[#33253c] text-[#33253c] hover:bg-[#f1ebdb] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
             >
-              <Download className="w-4 h-4 text-[#33253c]" />
-              <span>Download PDF Summary</span>
+              <Download className="w-3.5 h-3.5" />
+              <span>Download PDF</span>
             </button>
             <button
               onClick={onGoToDashboard}
-              className="px-6 py-2.5 rounded-lg bg-[#33253c] hover:bg-[#4a3b53] text-white text-xs font-semibold shadow-sm cursor-pointer transition-colors"
+              className="px-4 py-2 rounded-lg bg-[#33253c] hover:bg-[#4a3b53] text-white text-xs font-semibold cursor-pointer shadow-xs"
             >
-              Go to Dashboard
+              Dashboard
             </button>
           </div>
         </div>
-      ) : (
-        <div className="space-y-6 animate-fade-up stagger-1">
-          {/* Card: Profile Summary */}
-          <div className="bg-white/95 backdrop-blur-xs border border-[#ded9cf] rounded-xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
-            <h3 className="font-headline text-sm font-semibold text-[#33253c] pb-3 border-b border-[#ded9cf] flex items-center gap-2">
-              <User className="w-4 h-4 text-[#33253c]" />
-              Personal &amp; Contact Details
-            </h3>
+      )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-4">
-              <div>
-                <span className="text-[#4a454c] block text-[11px] font-medium uppercase">Legal Full Name:</span>
-                <span className="font-semibold text-[#1e1c17] text-sm">{application?.personal.fullName}</span>
-              </div>
-              <div>
-                <span className="text-[#4a454c] block text-[11px] font-medium uppercase">Date of Birth:</span>
-                <span className="font-semibold text-[#1e1c17]">{application?.personal.dob}</span>
-              </div>
-              <div>
-                <span className="text-[#4a454c] block text-[11px] font-medium uppercase">Email Address:</span>
-                <span className="font-semibold text-[#1e1c17]">{application?.personal.email}</span>
-              </div>
-              <div>
-                <span className="text-[#4a454c] block text-[11px] font-medium uppercase">Contact Phone:</span>
-                <span className="font-semibold text-[#1e1c17]">{application?.personal.phone}</span>
-              </div>
+      {submitError && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-300 rounded-xl text-red-900 text-xs flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+          <span>{submitError}</span>
+        </div>
+      )}
+
+      {/* Main Review Sections Container */}
+      <div className="space-y-6">
+        
+        {/* Card 1: Personal Details */}
+        <div className="bg-white border border-[#ded9cf] rounded-xl p-6 shadow-xs">
+          <h3 className="font-headline text-sm font-semibold text-[#33253c] pb-3 border-b border-[#ded9cf] flex items-center gap-2">
+            <User className="w-4 h-4 text-[#33253c]" />
+            Personal &amp; Contact Information
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs pt-4">
+            <div>
+              <span className="text-[#4a454c] block text-[11px] font-medium uppercase">Legal Full Name:</span>
+              <span className="font-semibold text-[#1e1c17] text-sm">{application?.personal.fullName}</span>
+            </div>
+            <div>
+              <span className="text-[#4a454c] block text-[11px] font-medium uppercase">Date of Birth:</span>
+              <span className="font-semibold text-[#1e1c17]">{application?.personal.dob}</span>
+            </div>
+            <div>
+              <span className="text-[#4a454c] block text-[11px] font-medium uppercase">Gender &amp; Category:</span>
+              <span className="font-semibold text-[#1e1c17]">
+                {application?.personal.gender || 'Not specified'} • {application?.personal.category || 'General'}
+              </span>
+            </div>
+            <div>
+              <span className="text-[#4a454c] block text-[11px] font-medium uppercase">Email Address:</span>
+              <span className="font-semibold text-[#1e1c17]">{application?.personal.email}</span>
+            </div>
+            <div>
+              <span className="text-[#4a454c] block text-[11px] font-medium uppercase">Contact Phone:</span>
+              <span className="font-semibold text-[#1e1c17]">{application?.personal.phone}</span>
+            </div>
+            <div>
+              <span className="text-[#4a454c] block text-[11px] font-medium uppercase">Blood Group:</span>
+              <span className="font-semibold text-[#1e1c17]">{application?.personal.bloodGroup || 'O+'}</span>
             </div>
           </div>
+        </div>
 
-          {/* Card: Academic & Program */}
-          <div className="bg-white/95 backdrop-blur-xs border border-[#ded9cf] rounded-xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
+        {/* Card 2: Academic Qualifications (Class 10 & 12) */}
+        <div className="bg-white border border-[#ded9cf] rounded-xl p-6 shadow-xs">
+          <h3 className="font-headline text-sm font-semibold text-[#33253c] pb-3 border-b border-[#ded9cf] flex items-center gap-2">
+            <GraduationCap className="w-4 h-4 text-[#33253c]" />
+            Academic Qualifications (Class 10 &amp; Class 12)
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 text-xs">
+            {/* Class 10 */}
+            <div className="bg-[#fcfaf2] p-4 rounded-xl border border-[#ded9cf] space-y-2">
+              <span className="font-bold text-xs text-[#33253c] uppercase block border-b border-[#ded9cf]/60 pb-1.5">
+                Class 10 (Secondary)
+              </span>
+              <p><span className="text-[#4a454c]">School:</span> <strong className="text-[#1e1c17]">{c10?.schoolName || 'N/A'}</strong></p>
+              <p><span className="text-[#4a454c]">Board:</span> <strong className="text-[#1e1c17]">{c10?.board || 'CBSE'}</strong></p>
+              <p><span className="text-[#4a454c]">Passing Year:</span> <strong className="text-[#1e1c17]">{c10?.yearOfPassing || '2023'}</strong></p>
+              <p>
+                <span className="text-[#4a454c]">Marks:</span> <strong className="text-[#1e1c17]">{c10?.marksObtained} / {c10?.fullMarks}</strong> 
+                <span className="ml-2 font-mono font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  {c10?.percentage}%
+                </span>
+              </p>
+            </div>
+
+            {/* Class 12 */}
+            <div className="bg-[#fcfaf2] p-4 rounded-xl border border-[#ded9cf] space-y-2">
+              <span className="font-bold text-xs text-[#33253c] uppercase block border-b border-[#ded9cf]/60 pb-1.5">
+                Class 12 (Higher Secondary)
+              </span>
+              <p><span className="text-[#4a454c]">School:</span> <strong className="text-[#1e1c17]">{c12?.schoolName || 'N/A'}</strong></p>
+              <p><span className="text-[#4a454c]">Board &amp; Stream:</span> <strong className="text-[#1e1c17]">{c12?.board || 'CBSE'} • {c12?.stream || 'Science'}</strong></p>
+              <p><span className="text-[#4a454c]">Passing Year:</span> <strong className="text-[#1e1c17]">{c12?.yearOfPassing || '2025'}</strong></p>
+              <p>
+                <span className="text-[#4a454c]">Marks:</span> <strong className="text-[#1e1c17]">{c12?.marksObtained} / {c12?.fullMarks}</strong>
+                <span className="ml-2 font-mono font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  {c12?.percentage}%
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 3: Entrance Examination Details */}
+        <div className="bg-white border border-[#ded9cf] rounded-xl p-6 shadow-xs">
+          <h3 className="font-headline text-sm font-semibold text-[#33253c] pb-3 border-b border-[#ded9cf] flex items-center gap-2">
+            <Award className="w-4 h-4 text-[#33253c]" />
+            Entrance Examination Details
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 text-xs">
+            <div className="p-3.5 bg-[#fcfaf2] rounded-xl border border-[#ded9cf]">
+              <span className="font-bold text-[#33253c] block text-xs mb-1">JEE Main 2026</span>
+              {exams?.jeeMain?.appeared ? (
+                <div className="space-y-1">
+                  <p className="text-[#4a454c]">Percentile: <strong className="text-[#1e1c17] font-mono">{exams.jeeMain.percentile}</strong></p>
+                  <p className="text-[#4a454c]">AIR Rank: <strong className="text-[#1e1c17] font-mono">{exams.jeeMain.rank}</strong></p>
+                </div>
+              ) : (
+                <span className="text-[#7b776d] italic">Did not appear</span>
+              )}
+            </div>
+
+            <div className="p-3.5 bg-[#fcfaf2] rounded-xl border border-[#ded9cf]">
+              <span className="font-bold text-[#33253c] block text-xs mb-1">WBJEE</span>
+              {exams?.wbjee?.appeared ? (
+                <p className="text-[#4a454c] mt-1">General Merit Rank: <strong className="text-[#1e1c17] font-mono">{exams.wbjee.rank}</strong></p>
+              ) : (
+                <span className="text-[#7b776d] italic">Did not appear</span>
+              )}
+            </div>
+
+            <div className="p-3.5 bg-[#fcfaf2] rounded-xl border border-[#ded9cf]">
+              <span className="font-bold text-[#33253c] block text-xs mb-1">IEMJEE</span>
+              {exams?.iemjee?.appeared ? (
+                <p className="text-[#4a454c] mt-1">Allotted Rank: <strong className="text-[#1e1c17] font-mono">{exams.iemjee.rank}</strong></p>
+              ) : (
+                <span className="text-[#7b776d] italic">Did not appear</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Card 4: Course Selection — Three Preferences */}
+        <div className="bg-white border border-[#ded9cf] rounded-xl p-6 shadow-xs">
+          <h3 className="font-headline text-sm font-semibold text-[#33253c] pb-3 border-b border-[#ded9cf] flex items-center gap-2">
+            <Award className="w-4 h-4 text-[#33253c]" />
+            Course Selection — Ordered Preferences
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 text-xs">
+            <div className="p-3.5 bg-[#fdfbf5] rounded-xl border-2 border-[#33253c]/40 space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#33253c] bg-[#e7dcea] px-2 py-0.5 rounded">
+                Preference 1 (First Choice)
+              </span>
+              <p className="font-bold text-sm text-[#33253c] mt-1">{pref1}</p>
+              <p className="text-[#4a454c] text-[11px]">{IEM_COURSE_LABELS[pref1] || pref1}</p>
+            </div>
+
+            <div className="p-3.5 bg-[#fdfbf5] rounded-xl border border-[#ded9cf] space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#4a454c] bg-[#f0eee6] px-2 py-0.5 rounded">
+                Preference 2 (Second Choice)
+              </span>
+              <p className="font-bold text-sm text-[#33253c] mt-1">{pref2}</p>
+              <p className="text-[#4a454c] text-[11px]">{IEM_COURSE_LABELS[pref2] || pref2}</p>
+            </div>
+
+            <div className="p-3.5 bg-[#fdfbf5] rounded-xl border border-[#ded9cf] space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#4a454c] bg-[#f0eee6] px-2 py-0.5 rounded">
+                Preference 3 (Third Choice)
+              </span>
+              <p className="font-bold text-sm text-[#33253c] mt-1">{pref3}</p>
+              <p className="text-[#4a454c] text-[11px]">{IEM_COURSE_LABELS[pref3] || pref3}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 5: Documents & Payment Status */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white border border-[#ded9cf] rounded-xl p-6 shadow-xs">
             <h3 className="font-headline text-sm font-semibold text-[#33253c] pb-3 border-b border-[#ded9cf] flex items-center gap-2">
-              <GraduationCap className="w-4 h-4 text-[#33253c]" />
-              Academic Background &amp; Program Choice
+              <FileText className="w-4 h-4 text-[#33253c]" />
+              Uploaded Documents ({documents.length})
             </h3>
+            <ul className="divide-y divide-[#ded9cf] text-xs pt-2">
+              {documents.map((d) => (
+                <li key={d.id} className="py-2.5 flex justify-between items-center">
+                  <span className="font-medium text-[#1e1c17]">{d.title}</span>
+                  <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded border ${
+                    d.status === 'approved' || d.status === 'verified'
+                      ? 'text-emerald-800 bg-emerald-50 border-emerald-200'
+                      : d.status === 'rejected'
+                      ? 'text-red-800 bg-red-50 border-red-200'
+                      : 'text-amber-800 bg-amber-50 border-amber-200'
+                  }`}>
+                    {d.status}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-4">
-              <div>
-                <span className="text-[#4a454c] block text-[11px] font-medium uppercase">Previous Institution:</span>
-                <span className="font-semibold text-[#1e1c17]">{application?.academic.previousInstitution}</span>
-              </div>
-              <div>
-                <span className="text-[#4a454c] block text-[11px] font-medium uppercase">Passing Year &amp; Aggregate:</span>
-                <span className="font-semibold text-[#1e1c17]">
-                  {application?.academic.yearOfPassing} ({application?.academic.percentageCgpa}% Score)
+          <div className="bg-white border border-[#ded9cf] rounded-xl p-6 shadow-xs">
+            <h3 className="font-headline text-sm font-semibold text-[#33253c] pb-3 border-b border-[#ded9cf] flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-[#33253c]" />
+              Application Fee Acceptance
+            </h3>
+            <div className="pt-3 space-y-2.5 text-xs">
+              <div className="flex justify-between">
+                <span className="text-[#4a454c]">Status:</span>
+                <span className="font-bold text-emerald-700">
+                  {paymentRecord ? 'PAID & RECORDED' : 'RECORDED'}
                 </span>
               </div>
-              <div className="md:col-span-2">
-                <span className="text-[#4a454c] block text-[11px] font-medium uppercase">Selected Primary Program:</span>
-                <span className="font-bold text-[#33253c] text-sm">{application?.course.primaryCourse}</span>
+              <div className="flex justify-between">
+                <span className="text-[#4a454c]">Transaction Reference:</span>
+                <span className="text-[#1e1c17] font-mono">{paymentRecord?.transactionId || 'TXN-IEM-98214'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#4a454c]">Amount:</span>
+                <span className="font-bold text-[#1e1c17]">₹0.00 (MVP Free Dummy Acceptance)</span>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Card: Documents & Payment Status */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white/95 backdrop-blur-xs border border-[#ded9cf] rounded-xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
-              <h3 className="font-headline text-sm font-semibold text-[#33253c] pb-3 border-b border-[#ded9cf] flex items-center gap-2">
-                <FileText className="w-4 h-4 text-[#33253c]" />
-                Uploaded Documents ({documents.length})
-              </h3>
-              <ul className="divide-y divide-[#ded9cf] text-xs pt-2">
-                {documents.map((d) => (
-                  <li key={d.id} className="py-2.5 flex justify-between items-center">
-                    <span className="font-medium text-[#1e1c17]">{d.title}</span>
-                    <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
-                      {d.status.toUpperCase()}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="bg-white/95 backdrop-blur-xs border border-[#ded9cf] rounded-xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
-              <h3 className="font-headline text-sm font-semibold text-[#33253c] pb-3 border-b border-[#ded9cf] flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-[#33253c]" />
-                Application Fee Verification
-              </h3>
-              <div className="pt-3 space-y-2.5 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-[#4a454c]">Status:</span>
-                  <span className="font-bold text-emerald-700">PAID &amp; VERIFIED</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#4a454c]">Transaction Reference:</span>
-                  <span className="text-[#1e1c17] font-mono">{paymentRecord?.transactionId || 'TXN987654321'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#4a454c]">Amount:</span>
-                  <span className="font-bold text-[#1e1c17]">${paymentRecord?.amount || 50}.00 USD</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Legal Declaration */}
+        {/* Legal Declaration */}
+        {!isSubmitted && (
           <div className="bg-[#f9f6ed] border border-[#ded9cf] rounded-xl p-5">
             <label className="flex items-start gap-3 cursor-pointer">
               <input
@@ -266,17 +404,19 @@ export const SubmitReviewView: React.FC<SubmitReviewViewProps> = ({
                 className="mt-0.5 w-4 h-4 rounded accent-[#33253c] border-[#ded9cf] cursor-pointer"
               />
               <span className="text-xs text-[#1e1c17] leading-relaxed">
-                I hereby declare that all particulars stated in this application form and attached certificates are true, correct, and complete to the best of my knowledge. I agree to abide by the admission regulations of IEM Kolkata.
+                I hereby declare that all academic qualifications, entrance examination percentiles and scores, and ordered course preferences stated in this application form are true, correct, and complete to the best of my knowledge. I understand that admission is subject to institutional document scrutiny and merit allotment.
               </span>
             </label>
           </div>
+        )}
 
-          {/* Footer Navigation */}
+        {/* Footer Navigation */}
+        {!isSubmitted && (
           <div className="pt-4 flex justify-between items-center border-t border-[#ded9cf]">
             <button
               type="button"
               onClick={onPreviousStep}
-              className="border border-[#33253c] text-[#33253c] hover:bg-[#f1ebdb] text-xs font-semibold py-2.5 px-5 rounded-lg transition-colors flex items-center gap-2 cursor-pointer"
+              className="border border-[#33253c] text-[#33253c] hover:bg-[#f1ebdb] text-xs font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Payment</span>
@@ -287,20 +427,20 @@ export const SubmitReviewView: React.FC<SubmitReviewViewProps> = ({
               type="button"
               disabled={!agreed || submitting}
               onClick={handleSubmit}
-              className="bg-[#33253c] hover:bg-[#4a3b53] text-white text-xs font-semibold py-2.5 px-8 rounded-lg transition-colors shadow-sm flex items-center gap-2 disabled:opacity-40 cursor-pointer group"
+              className="bg-[#33253c] hover:bg-[#4a3b53] text-white text-xs font-semibold py-2.5 px-8 rounded-lg shadow-xs flex items-center gap-2 disabled:opacity-40 cursor-pointer"
             >
               {submitting ? (
                 <span>SUBMITTING APPLICATION...</span>
               ) : (
                 <>
-                  <Send className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+                  <Send className="w-3.5 h-3.5" />
                   <span>Submit Application</span>
                 </>
               )}
             </button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

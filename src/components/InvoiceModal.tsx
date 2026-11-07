@@ -17,15 +17,15 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const txnId = payment?.transactionId || 'TXN987654321';
-  const invoiceNum = payment?.invoiceNumber || 'INV-2026-001';
-  const amount = payment?.amount || 50.00;
+  const txnId = payment?.transactionId || payment?.transactionReference || 'TXN-IEM-98214';
+  const invoiceNum = payment?.invoiceNumber || 'INV-IEM-2026-001';
+  const amount = 0.00; // Strictly ₹0.00
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-3 md:p-6 overflow-y-auto text-[#1e1c17]">
       <div 
         id="fee-invoice-modal"
-        className="bg-white max-w-2xl w-full rounded-2xl border border-[#ded9cf] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="bg-white max-w-2xl w-full rounded-2xl border border-[#ded9cf] shadow-xl overflow-hidden flex flex-col max-h-[90vh]"
       >
         {/* Toolbar */}
         <div className="p-4 border-b border-[#ded9cf] bg-[#fdfbf5] flex justify-between items-center print:hidden">
@@ -43,7 +43,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 text-[#4a454c] hover:text-[#1e1c17] hover:bg-[#f0eee6] rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 text-[#4a454c] hover:text-[#1e1c17] rounded-lg cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -65,9 +65,9 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             </div>
 
             <div className="text-right">
-              <span className="text-[10px] text-[#4a454c] uppercase block">Tax Invoice No.</span>
+              <span className="text-[10px] text-[#4a454c] uppercase block">Official Tax Invoice</span>
               <span className="font-bold text-[#33253c] font-mono text-sm">{invoiceNum}</span>
-              <span className="text-[11px] text-[#4a454c] block mt-0.5">Date: {new Date().toLocaleDateString()}</span>
+              <span className="text-[11px] text-[#4a454c] block mt-0.5">Date: {new Date(payment?.paidAt || Date.now()).toLocaleDateString()}</span>
             </div>
           </div>
 
@@ -81,9 +81,9 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             </div>
             <div className="text-right">
               <span className="text-[10px] font-semibold text-[#4a454c] uppercase block">Payment Method:</span>
-              <p className="font-bold text-sm text-[#1e1c17] mt-0.5">{payment?.paymentMethod || 'Online Gateway'}</p>
-              <p className="text-[#4a454c] font-mono text-[11px]">Txn: {txnId}</p>
-              <p className="text-emerald-700 font-semibold mt-1">STATUS: COMPLETED</p>
+              <p className="font-bold text-sm text-[#1e1c17] mt-0.5">{payment?.paymentMethod || 'IEM Online Gateway'}</p>
+              <p className="text-[#4a454c] font-mono text-[11px]">Txn Ref: {txnId}</p>
+              <p className="text-emerald-700 font-semibold mt-1">STATUS: COMPLETED (₹0.00)</p>
             </div>
           </div>
 
@@ -94,27 +94,27 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 <tr className="bg-[#f9f6ed] text-[#4a454c] font-semibold uppercase text-[10px] tracking-wider border-b border-[#ded9cf]">
                   <th className="py-2.5 px-3">Item Description</th>
                   <th className="py-2.5 px-3 text-center">HSN/SAC</th>
-                  <th className="py-2.5 px-3 text-right">Qty</th>
-                  <th className="py-2.5 px-3 text-right">Rate</th>
-                  <th className="py-2.5 px-3 text-right">Amount (USD)</th>
+                  <th className="py-2.5 px-3 text-right">Standard Fee</th>
+                  <th className="py-2.5 px-3 text-right">Academic Waiver</th>
+                  <th className="py-2.5 px-3 text-right">Net Charged (INR)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#ded9cf]/60">
                 <tr>
                   <td className="py-3 px-3">
                     <p className="font-semibold text-[#1e1c17]">IEM Admission Processing &amp; Scrutiny Fee</p>
-                    <p className="text-[11px] text-[#4a454c]">Round 1 Evaluation, Counseling &amp; Verification</p>
+                    <p className="text-[11px] text-[#4a454c]">Session 2026-2027 Counseling Evaluation</p>
                   </td>
                   <td className="py-3 px-3 text-center text-[#4a454c] font-mono">999293</td>
-                  <td className="py-3 px-3 text-right">1</td>
-                  <td className="py-3 px-3 text-right font-mono">${amount.toFixed(2)}</td>
-                  <td className="py-3 px-3 text-right font-bold font-mono">${amount.toFixed(2)}</td>
+                  <td className="py-3 px-3 text-right font-mono line-through text-[#7b776d]">₹1,500.00</td>
+                  <td className="py-3 px-3 text-right font-mono text-emerald-800">- ₹1,500.00</td>
+                  <td className="py-3 px-3 text-right font-bold font-mono">₹0.00</td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr className="border-t border-[#ded9cf] font-semibold">
-                  <td colSpan={4} className="py-3 px-3 text-right text-xs">Total Amount Paid:</td>
-                  <td className="py-3 px-3 text-right text-sm font-bold text-[#33253c] font-mono">${amount.toFixed(2)}</td>
+                  <td colSpan={4} className="py-3 px-3 text-right text-xs">Total Amount Paid by Candidate:</td>
+                  <td className="py-3 px-3 text-right text-sm font-bold text-emerald-800 font-mono">₹0.00</td>
                 </tr>
               </tfoot>
             </table>
@@ -123,9 +123,9 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-800">
             <span className="flex items-center gap-1.5 font-semibold">
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              Official Electronic Receipt Generated &amp; Verified
+              Electronic Receipt Certified &amp; Archived in University Database
             </span>
-            <span className="font-mono text-[11px]">GATEWAY: STRIPE_IEM_LIVE</span>
+            <span className="font-mono text-[11px]">GATEWAY: IEM_PORTAL_₹0</span>
           </div>
         </div>
 
@@ -133,7 +133,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
         <div className="p-4 border-t border-[#ded9cf] bg-[#fdfbf5] flex justify-end gap-2 print:hidden">
           <button
             onClick={onClose}
-            className="px-5 py-2 bg-[#33253c] text-white text-xs font-semibold rounded-lg hover:bg-[#4a3b53] cursor-pointer transition-colors"
+            className="px-5 py-2 bg-[#33253c] text-white text-xs font-semibold rounded-lg hover:bg-[#4a3b53] cursor-pointer"
           >
             Close
           </button>

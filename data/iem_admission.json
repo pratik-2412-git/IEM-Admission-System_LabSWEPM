@@ -1,61 +1,59 @@
 {
-  "users": [
+  "profiles": [
     {
       "id": "usr_candidate_001",
       "email": "candidate@example.com",
-      "password": "password123",
-      "name": "Aanya Sharma",
-      "role": "candidate",
-      "applicationId": "IEM-2024-001",
+      "full_name": "Aanya Sharma",
+      "role": "student",
+      "phone": "+91 98765 43210",
       "avatar": "https://lh3.googleusercontent.com/aida-public/AB6AXuBdgDcW0tVbFbIuOWUVdbU8cYPLCHGs6Enk-tp5dwoWiQpulHBGDQ0ChR4bY97svyjwKzN9QolMlzSHo4nCVS1YOhe_2Z588RSMBWXrNrZlKKHeW32K7HHX7APn0BaBw8MkLrSX32IjzZEfYZ-ydgxsr5VgVDQAu_CwyzBiZf65M3JFIOObFqioMGrvf6X7VUX1YqeD_yu_9NQkCKHA-HN_FGII2yB7LV_W0iL6V4g_WSC8QFoYDhLu",
-      "phone": "+1 (555) 000-0000",
-      "createdAt": "2026-08-20T10:00:00Z"
-    },
-    {
-      "id": "usr_candidate_002",
-      "email": "rahul.verma@example.com",
-      "password": "password123",
-      "name": "Rahul Verma",
-      "role": "candidate",
-      "applicationId": "IEM-2024-002",
-      "avatar": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80",
-      "phone": "+1 (555) 234-5678",
-      "createdAt": "2026-08-21T08:30:00Z"
+      "created_at": "2026-08-20T10:00:00Z"
     },
     {
       "id": "usr_admin_001",
       "email": "admin@iem.edu.in",
       "password": "admin123",
-      "name": "Dr. S. Chatterjee (Admissions Dean)",
+      "full_name": "Prof. Dr. A. K. Banerjee (Dean of Admissions)",
       "role": "admin",
-      "applicationId": "IEM-STAFF-01",
-      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
       "phone": "+91 33 2357 2059",
-      "createdAt": "2026-01-01T00:00:00Z"
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      "created_at": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "usr_1794039071867_mibn",
+      "email": "pritam@test.com",
+      "full_name": "Pritam Ghosh",
+      "role": "student",
+      "phone": "+91 99999 88888",
+      "avatar": "https://lh3.googleusercontent.com/aida-public/AB6AXuBdgDcW0tVbFbIuOWUVdbU8cYPLCHGs6Enk-tp5dwoWiQpulHBGDQ0ChR4bY97svyjwKzN9QolMlzSHo4nCVS1YOhe_2Z588RSMBWXrNrZlKKHeW32K7HHX7APn0BaBw8MkLrSX32IjzZEfYZ-ydgxsr5VgVDQAu_CwyzBiZf65M3JFIOObFqioMGrvf6X7VUX1YqeD_yu_9NQkCKHA-HN_FGII2yB7LV_W0iL6V4g_WSC8QFoYDhLu",
+      "created_at": "2026-11-07T08:11:11.867Z"
     }
   ],
   "applications": [
     {
-      "id": "IEM-2024-001",
-      "userId": "usr_candidate_001",
-      "status": "under_review",
-      "currentStep": 3,
-      "personal": {
+      "id": "app_001",
+      "student_id": "usr_candidate_001",
+      "application_number": "IEM-2026-001",
+      "course": "B.Tech in Computer Science & Engineering (CSE)",
+      "department": "Computer Science & Engineering",
+      "campus_preference": "IEM Kolkata - Main Campus (Salt Lake)",
+      "application_status": "correction_required",
+      "personal_details": {
         "fullName": "Aanya Sharma",
-        "dob": "2005-06-15",
+        "dob": "2006-06-15",
         "email": "candidate@example.com",
-        "phone": "+1 (555) 000-0000",
+        "phone": "+91 98765 43210",
         "gender": "Female",
         "category": "General",
         "bloodGroup": "O+",
         "guardianName": "Rajesh Sharma",
-        "guardianPhone": "+1 (555) 987-6543",
-        "address": "42 Academic Avenue, Salt Lake Sector V",
+        "guardianPhone": "+91 98765 00000",
+        "address": "Salt Lake Sector V, Bidhannagar",
         "city": "Kolkata",
         "state": "West Bengal",
         "pincode": "700091"
       },
-      "academic": {
+      "academic_details": {
         "previousInstitution": "Delhi Public School, Ruby Park",
         "yearOfPassing": "2025",
         "percentageCgpa": "94.6",
@@ -66,247 +64,315 @@
         "entranceScore": "98.4 Percentile",
         "entranceRank": "AIR 1420"
       },
-      "course": {
-        "primaryCourse": "B.Tech in Computer Science & Engineering (CSE)",
-        "secondaryCourse": "B.Tech in Artificial Intelligence & Data Science",
-        "campusPreference": "IEM Kolkata - Main Campus (Salt Lake)"
+      "preference_1": "CSE",
+      "preference_2": "IT",
+      "preference_3": "AIML",
+      "class_10_details": {
+        "schoolName": "Delhi Public School, Ruby Park",
+        "board": "CBSE",
+        "yearOfPassing": "2023",
+        "fullMarks": 500,
+        "marksObtained": 478,
+        "percentage": 95.6
       },
-      "submittedAt": "2026-08-21T14:30:00Z",
-      "updatedAt": "2026-08-22T04:00:00Z"
+      "class_12_details": {
+        "schoolName": "Delhi Public School, Ruby Park",
+        "board": "CBSE",
+        "stream": "Science",
+        "yearOfPassing": "2025",
+        "fullMarks": 500,
+        "marksObtained": 473,
+        "percentage": 94.6
+      },
+      "entrance_exam_details": {
+        "jeeMain": {
+          "appeared": true,
+          "percentile": "98.42",
+          "rank": "1420"
+        },
+        "wbjee": {
+          "appeared": true,
+          "rank": "312"
+        },
+        "iemjee": {
+          "appeared": false,
+          "rank": ""
+        }
+      },
+      "submitted_at": "2026-11-07T08:11:40.113Z",
+      "updated_at": "2026-11-07T08:12:32.883Z",
+      "current_step": 2,
+      "admin_remarks": "Correction required: Marksheet is missing signature of the school principal. Please re-upload attested copy."
     },
     {
-      "id": "IEM-2024-002",
-      "userId": "usr_candidate_002",
-      "status": "merit_qualified",
-      "currentStep": 4,
-      "personal": {
-        "fullName": "Rahul Verma",
-        "dob": "2005-09-22",
-        "email": "rahul.verma@example.com",
-        "phone": "+1 (555) 234-5678",
-        "gender": "Male",
-        "category": "OBC",
-        "bloodGroup": "B+",
-        "guardianName": "Manoj Verma",
-        "guardianPhone": "+1 (555) 456-7890",
-        "address": "18 Park Circus Avenue",
-        "city": "Kolkata",
-        "state": "West Bengal",
-        "pincode": "700017"
+      "id": "app_1794039071867_8sro",
+      "student_id": "usr_1794039071867_mibn",
+      "application_number": "IEM-2026-002",
+      "course": "DATA SCIENCE",
+      "department": "DATA SCIENCE",
+      "campus_preference": "IEM Kolkata - Main Campus (Salt Lake)",
+      "application_status": "seat_allotted",
+      "current_step": 1,
+      "personal_details": {
+        "fullName": "Pritam Ghosh",
+        "dob": "2006-01-01",
+        "email": "pritam@test.com",
+        "phone": "+91 99999 88888",
+        "gender": "Not Specified",
+        "category": "General",
+        "bloodGroup": "O+",
+        "guardianName": "",
+        "guardianPhone": "",
+        "address": "",
+        "city": "",
+        "state": "",
+        "pincode": ""
       },
-      "academic": {
-        "previousInstitution": "South Point High School",
+      "academic_details": {
+        "previousInstitution": "",
         "yearOfPassing": "2025",
-        "percentageCgpa": "96.2",
-        "boardUniversity": "WBCHSE",
-        "stream": "Science (Pure)",
-        "rollNumber": "WB-2025-10492",
-        "entranceExam": "WBJEE",
-        "entranceScore": "99.1 Percentile",
-        "entranceRank": "State Rank 412"
+        "percentageCgpa": "",
+        "boardUniversity": "CBSE",
+        "stream": "Science",
+        "rollNumber": "",
+        "entranceExam": "JEE Main / WBJEE",
+        "entranceScore": "",
+        "entranceRank": ""
       },
-      "course": {
-        "primaryCourse": "B.Tech in Computer Science & Engineering (CSE)",
-        "secondaryCourse": "B.Tech in Information Technology",
-        "campusPreference": "IEM Kolkata - Main Campus"
+      "submitted_at": null,
+      "updated_at": "2026-11-07T09:54:10.826Z",
+      "class_10_details": {
+        "schoolName": "National High School",
+        "board": "ICSE",
+        "yearOfPassing": "2023",
+        "fullMarks": 500,
+        "marksObtained": 460,
+        "percentage": 92
       },
-      "submittedAt": "2026-08-20T11:20:00Z",
-      "updatedAt": "2026-08-22T03:00:00Z"
+      "class_12_details": {
+        "schoolName": "National High School",
+        "board": "ISC",
+        "stream": "Science",
+        "yearOfPassing": "2025",
+        "fullMarks": 500,
+        "marksObtained": 470,
+        "percentage": 94
+      },
+      "entrance_exam_details": {
+        "jeeMain": {
+          "appeared": true,
+          "percentile": "97.5",
+          "rank": "2100"
+        },
+        "wbjee": {
+          "appeared": true,
+          "rank": "540"
+        },
+        "iemjee": {
+          "appeared": false,
+          "rank": ""
+        }
+      },
+      "preference_1": "CSE",
+      "preference_2": "DATA SCIENCE",
+      "preference_3": "AIML"
     }
   ],
   "documents": [
     {
       "id": "doc_001",
-      "applicationId": "IEM-2024-001",
-      "type": "marksheet_12th",
-      "title": "Class 12th Marksheet",
-      "description": "Final board examination results.",
-      "fileName": "marksheet_12th_2023.pdf",
-      "fileSize": "2.4MB",
-      "fileUrl": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-      "status": "verified",
-      "uploadedAt": "2026-08-21T14:15:00Z",
-      "verifiedAt": "2026-08-21T18:00:00Z",
-      "remarks": "CBSE marksheet verified with official digilocker repository."
+      "application_id": "app_001",
+      "document_type": "marksheet_10th",
+      "title": "Class 10th Marksheet",
+      "file_name": "class_10_clear_scan.pdf",
+      "file_path": "app_001/marksheet_10th_class_10_clear_scan.pdf",
+      "file_size": "2.1MB",
+      "file_url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+      "verification_status": "approved",
+      "uploaded_at": "2026-11-07T08:11:52.737Z",
+      "verified_at": "2026-11-07T09:54:27.073Z"
     },
     {
       "id": "doc_002",
-      "applicationId": "IEM-2024-001",
-      "type": "id_proof",
-      "title": "Government ID Proof",
-      "description": "Aadhaar, PAN, or Passport.",
-      "fileName": "aadhaar_card_front_back.pdf",
-      "fileSize": "1.8MB",
-      "fileUrl": "",
-      "status": "uploaded",
-      "uploadedAt": "2026-08-21T14:20:00Z",
-      "remarks": "Pending reviewer verification."
+      "application_id": "app_001",
+      "document_type": "marksheet_12th",
+      "title": "Class 12th Marksheet",
+      "file_name": "class_12_marksheet_final.pdf",
+      "file_path": "app_001/marksheet_12th.pdf",
+      "file_size": "2.4MB",
+      "file_url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+      "verification_status": "approved",
+      "uploaded_at": "2026-08-21T14:20:00Z",
+      "verified_at": "2026-11-07T08:12:09.692Z"
     },
     {
       "id": "doc_003",
-      "applicationId": "IEM-2024-001",
-      "type": "photo",
-      "title": "Recent Photograph",
-      "description": "Passport size, white background.",
-      "fileName": "candidate_photo_passport.jpg",
-      "fileSize": "650KB",
-      "fileUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuBdgDcW0tVbFbIuOWUVdbU8cYPLCHGs6Enk-tp5dwoWiQpulHBGDQ0ChR4bY97svyjwKzN9QolMlzSHo4nCVS1YOhe_2Z588RSMBWXrNrZlKKHeW32K7HHX7APn0BaBw8MkLrSX32IjzZEfYZ-ydgxsr5VgVDQAu_CwyzBiZf65M3JFIOObFqioMGrvf6X7VUX1YqeD_yu_9NQkCKHA-HN_FGII2yB7LV_W0iL6V4g_WSC8QFoYDhLu",
-      "status": "verified",
-      "uploadedAt": "2026-08-21T14:22:00Z",
-      "verifiedAt": "2026-08-21T18:00:00Z"
+      "application_id": "app_001",
+      "document_type": "id_proof",
+      "title": "Government ID Proof (Aadhaar / Passport)",
+      "file_name": "aadhaar_front_back.pdf",
+      "file_path": "app_001/id_proof.pdf",
+      "file_size": "1.2MB",
+      "file_url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+      "verification_status": "approved",
+      "uploaded_at": "2026-08-21T14:22:00Z",
+      "verified_at": "2026-11-07T08:12:09.708Z"
+    },
+    {
+      "id": "doc_004",
+      "application_id": "app_001",
+      "document_type": "photo",
+      "title": "Recent Passport Photograph",
+      "file_name": "candidate_photo.jpg",
+      "file_path": "app_001/photo.jpg",
+      "file_size": "450KB",
+      "file_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuBdgDcW0tVbFbIuOWUVdbU8cYPLCHGs6Enk-tp5dwoWiQpulHBGDQ0ChR4bY97svyjwKzN9QolMlzSHo4nCVS1YOhe_2Z588RSMBWXrNrZlKKHeW32K7HHX7APn0BaBw8MkLrSX32IjzZEfYZ-ydgxsr5VgVDQAu_CwyzBiZf65M3JFIOObFqioMGrvf6X7VUX1YqeD_yu_9NQkCKHA-HN_FGII2yB7LV_W0iL6V4g_WSC8QFoYDhLu",
+      "verification_status": "approved",
+      "uploaded_at": "2026-08-21T14:25:00Z",
+      "verified_at": "2026-11-07T08:12:09.730Z"
     }
   ],
   "payments": [
     {
-      "id": "pay_001",
-      "applicationId": "IEM-2024-001",
-      "transactionId": "TXN987654321",
-      "amount": 50,
-      "currency": "USD",
-      "status": "success",
-      "method": "card",
-      "paidAt": "2026-08-22T02:48:00Z",
-      "invoiceNumber": "INV-IEM-2024-0892",
-      "details": {
-        "cardLast4": "4242"
-      }
+      "id": "pay_1794039152883_mhuo",
+      "application_id": "app_001",
+      "student_id": "usr_candidate_001",
+      "amount": 0,
+      "currency": "INR",
+      "payment_status": "paid",
+      "transaction_reference": "TXN-IEM-53026257",
+      "invoice_number": "INV-IEM-2026-4520",
+      "payment_method": "IEM Online Portal (₹0.00 MVP Dummy Payment)",
+      "payment_date": "2026-11-07T08:12:32.883Z"
     }
   ],
-  "meritList": [
+  "merit_list": [
     {
       "id": "merit_001",
-      "rank": 1,
-      "applicationId": "IEM-2024-019",
-      "candidateName": "Sourav Ganguly Mukherjee",
-      "category": "General",
-      "meritScore": 99.8,
+      "application_id": "app_seed_01",
+      "merit_rank": 1,
+      "academic_score": 99.4,
+      "candidate_name": "Debjit Roy",
       "course": "B.Tech in Computer Science & Engineering (CSE)",
-      "allottedSeat": "CSE-A-001 (Round 1 Allotment)",
-      "status": "Confirmed"
+      "created_at": "2026-08-15T10:00:00Z"
     },
     {
       "id": "merit_002",
-      "rank": 2,
-      "applicationId": "IEM-2024-002",
-      "candidateName": "Rahul Verma",
-      "category": "OBC",
-      "meritScore": 99.1,
+      "application_id": "app_seed_02",
+      "merit_rank": 2,
+      "academic_score": 98.9,
+      "candidate_name": "Sneha Mukherjee",
       "course": "B.Tech in Computer Science & Engineering (CSE)",
-      "allottedSeat": "CSE-A-002 (Round 1 Allotment)",
-      "status": "Allotted"
+      "created_at": "2026-08-15T10:00:00Z"
     },
     {
       "id": "merit_003",
-      "rank": 3,
-      "applicationId": "IEM-2024-054",
-      "candidateName": "Debasmita Roy",
-      "category": "General",
-      "meritScore": 98.9,
+      "application_id": "app_seed_03",
+      "merit_rank": 3,
+      "academic_score": 98.1,
+      "candidate_name": "Arjun Sen",
       "course": "B.Tech in Artificial Intelligence & Data Science",
-      "allottedSeat": "AIDS-001 (Round 1 Allotment)",
-      "status": "Confirmed"
+      "created_at": "2026-08-15T10:00:00Z"
     },
     {
-      "id": "merit_004",
-      "rank": 4,
-      "applicationId": "IEM-2024-001",
-      "candidateName": "Aanya Sharma",
-      "category": "General",
-      "meritScore": 98.4,
+      "id": "merit_1794039134797",
+      "application_id": "app_001",
+      "merit_rank": 4,
+      "academic_score": 94.6,
+      "candidate_name": "Aanya Sharma",
       "course": "B.Tech in Computer Science & Engineering (CSE)",
-      "allottedSeat": "CSE-A-004 (Provisional / Pending Docs)",
-      "status": "Allotted"
+      "created_at": "2026-11-07T08:12:14.797Z"
     },
     {
-      "id": "merit_005",
-      "rank": 5,
-      "applicationId": "IEM-2024-077",
-      "candidateName": "Arjun Sen",
-      "category": "SC",
-      "meritScore": 97.8,
-      "course": "B.Tech in Electronics & Communication (ECE)",
-      "allottedSeat": "ECE-001 (Round 1 Allotment)",
-      "status": "Allotted"
-    },
+      "id": "merit_1794045258389",
+      "application_id": "app_1794039071867_8sro",
+      "merit_rank": 4,
+      "academic_score": 94,
+      "candidate_name": "Pritam Ghosh",
+      "course": "CSE",
+      "created_at": "2026-11-07T09:54:18.389Z"
+    }
+  ],
+  "seat_allocations": [
     {
-      "id": "merit_006",
-      "rank": 6,
-      "applicationId": "IEM-2024-112",
-      "candidateName": "Priyanka Ghosh",
-      "category": "General",
-      "meritScore": 97.2,
-      "course": "B.Tech in Information Technology",
-      "allottedSeat": "IT-001 (Round 1 Allotment)",
-      "status": "Waiting List"
-    },
-    {
-      "id": "merit_007",
-      "rank": 7,
-      "applicationId": "IEM-2024-143",
-      "candidateName": "Tanmay Das",
-      "category": "ST",
-      "meritScore": 96.5,
+      "id": "alloc_1794039138990",
+      "application_id": "app_001",
+      "student_id": "usr_candidate_001",
       "course": "B.Tech in Computer Science & Engineering (CSE)",
-      "allottedSeat": "CSE-B-001 (Reserved Quota)",
-      "status": "Allotted"
+      "department": "B.Tech in Computer Science & Engineering (CSE)",
+      "campus": "IEM Kolkata Main Campus (Salt Lake)",
+      "seat_number": "CSE-2026-004",
+      "allocation_status": "allotted",
+      "allotted_at": "2026-11-07T08:12:18.990Z"
+    },
+    {
+      "id": "alloc_1794045250826",
+      "application_id": "app_1794039071867_8sro",
+      "student_id": "usr_1794039071867_mibn",
+      "course": "DATA SCIENCE",
+      "department": "DATA SCIENCE",
+      "campus": "IEM Kolkata Main Campus (Salt Lake)",
+      "seat_number": "DATA-SCIENCE-2026-005",
+      "allocation_status": "allotted",
+      "allotted_at": "2026-11-07T09:54:10.826Z"
     }
   ],
   "notifications": [
     {
-      "id": "notif_001",
-      "userId": "usr_candidate_001",
-      "title": "Fee Payment Successful",
-      "message": "Your application fee of $50 has been successfully processed. Transaction ID: TXN987654321.",
-      "type": "payment",
-      "createdAt": "2026-08-22T02:48:00Z",
-      "read": false
-    },
-    {
-      "id": "notif_002",
-      "userId": "usr_candidate_001",
-      "title": "Documents Uploaded",
-      "message": "High School Transcripts and ID Proof have been uploaded and are pending verification.",
-      "type": "document",
-      "createdAt": "2026-08-21T14:22:00Z",
-      "read": true
-    },
-    {
-      "id": "notif_003",
-      "userId": "usr_candidate_001",
-      "title": "Admission Portal Open for 2026 Cycle",
-      "message": "Welcome to the IEM 2026 Admissions. Complete all 4 phases before the priority cutoff date.",
+      "id": "notif_welcome",
+      "recipient_id": "usr_candidate_001",
+      "title": "Welcome to IEM Admission Portal",
+      "message": "Your student registration is verified. Complete your application form and submit documents to enter round 1 scrutiny.",
       "type": "announcement",
-      "createdAt": "2026-08-20T10:00:00Z",
-      "read": true
+      "is_read": false,
+      "created_at": "2026-11-07T08:11:00.492Z"
     }
   ],
-  "auditLogs": [
+  "audit_logs": [
     {
-      "id": "log_001",
-      "action": "USER_LOGIN",
-      "actor": "candidate@example.com",
-      "entity": "auth",
-      "entityId": "usr_candidate_001",
-      "timestamp": "2026-08-22T04:45:00Z",
-      "details": "Candidate logged in successfully from client session."
+      "id": "log_1794045241958_dila",
+      "action": "APPLICATION_DRAFT_SAVED",
+      "actor": "usr_1794039071867_mibn",
+      "entity": "applications",
+      "entity_id": "app_1794039071867_8sro",
+      "timestamp": "2026-11-07T09:54:01.958Z",
+      "details": "Draft details updated"
     },
     {
-      "id": "log_002",
-      "action": "PAYMENT_PROCESSED",
-      "actor": "PAYMENT_GATEWAY",
-      "entity": "payments",
-      "entityId": "pay_001",
-      "timestamp": "2026-08-22T02:48:00Z",
-      "details": "Transaction TXN987654321 captured for $50 via Stripe/Card simulation."
-    },
-    {
-      "id": "log_003",
-      "action": "DOC_VERIFIED",
-      "actor": "admin@iem.edu.in",
+      "id": "log_1794039112738_6kbi",
+      "action": "DOCUMENT_UPLOADED",
+      "actor": "app_001",
       "entity": "documents",
-      "entityId": "doc_001",
-      "timestamp": "2026-08-21T18:00:00Z",
-      "details": "Class 12th marksheet marked as Verified by Admissions Staff."
+      "entity_id": "doc_001",
+      "timestamp": "2026-11-07T08:11:52.738Z",
+      "details": "Uploaded class_10_clear_scan.pdf (marksheet_10th)"
+    },
+    {
+      "id": "log_1794039084985_s48c",
+      "action": "ADMIN_LOGIN",
+      "actor": "admin@iem.edu.in",
+      "entity": "profiles",
+      "entity_id": "usr_admin_001",
+      "timestamp": "2026-11-07T08:11:24.985Z",
+      "details": "Administrator logged in to Admissions Console"
+    },
+    {
+      "id": "log_1794039079113_6cao",
+      "action": "STUDENT_LOGIN_OTP",
+      "actor": "pritam@test.com",
+      "entity": "profiles",
+      "entity_id": "usr_1794039071867_mibn",
+      "timestamp": "2026-11-07T08:11:19.113Z",
+      "details": "Logged in via verified OTP"
+    },
+    {
+      "id": "log_seed",
+      "action": "SYSTEM_INIT",
+      "actor": "SYSTEM",
+      "entity": "database",
+      "entity_id": "all",
+      "timestamp": "2026-11-07T08:11:00.493Z",
+      "details": "IEM Admission Relational Database Initialized."
     }
   ]
 }

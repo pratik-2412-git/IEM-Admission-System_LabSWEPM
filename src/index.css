@@ -40,7 +40,7 @@
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* Split screen background overlay */
+/* Split screen background overlay - clean static gradient */
 .split-bg {
   position: relative;
 }
@@ -56,96 +56,51 @@
 }
 
 .auth-card {
-  box-shadow: 0 12px 35px -8px rgba(67, 56, 40, 0.08), 0 4px 12px -2px rgba(67, 56, 40, 0.04);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .form-input:focus {
   border-color: #33253c;
-  box-shadow: 0 0 0 2px rgba(51, 37, 60, 0.18);
+  outline: none;
 }
 
-/* Fluid Entrance Animations */
-@keyframes subtleFadeUp {
-  0% {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes subtleFade {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-.animate-fade-up {
-  animation: subtleFadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+/* Static classes for compatibility with zero animation overhead */
+.animate-fade-up,
 .animate-fade-in {
-  animation: subtleFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 1 !important;
+  transform: none !important;
 }
 
-.stagger-1 { animation-delay: 0.06s; }
-.stagger-2 { animation-delay: 0.14s; }
-.stagger-3 { animation-delay: 0.22s; }
-.stagger-4 { animation-delay: 0.30s; }
-.stagger-5 { animation-delay: 0.38s; }
+.stagger-1,
+.stagger-2,
+.stagger-3,
+.stagger-4,
+.stagger-5 {
+  animation: none !important;
+}
 
 .skeleton-shimmer {
-  background: linear-gradient(90deg, #f0eee6 25%, #faf8f0 50%, #f0eee6 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.8s infinite ease-in-out;
+  background: #f0eee6;
 }
 
-/* Interactive Button Loading Spinner */
+/* Standard functional loader for real backend queries only */
 .btn-spinner {
-  border: 2.5px solid rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: #ffffff;
   border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  animation: spin 0.75s linear infinite;
+  width: 16px;
+  height: 16px;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-/* Material Symbols configuration */
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
-  font-style: normal;
-  font-size: 20px;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
-}
-
-.animated-progress-bar {
-  transition: width 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+.progress-bar-fill {
+  /* Static direct width presentation */
+  background-color: #33253c;
 }
 
 /* Custom scrollbars matching warm linen theme */
